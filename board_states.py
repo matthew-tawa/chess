@@ -1,23 +1,25 @@
+import Tiles
+
 # completely empty board
 EMPTY_STATE = {\
-    "A1": "", "A2": "", "A3": "", "A4": "", "A5": "", "A6": "", "A7": "", "A8": "",\
-    "B1": "", "B2": "", "B3": "", "B4": "", "B5": "", "B6": "", "B7": "", "B8": "",\
-    "C1": "", "C2": "", "C3": "", "C4": "", "C5": "", "C6": "", "C7": "", "C8": "",\
-    "D1": "", "D2": "", "D3": "", "D4": "", "D5": "", "D6": "", "D7": "", "D8": "",\
-    "E1": "", "E2": "", "E3": "", "E4": "", "E5": "", "E6": "", "E7": "", "E8": "",\
-    "F1": "", "F2": "", "F3": "", "F4": "", "F5": "", "F6": "", "F7": "", "F8": "",\
-    "G1": "", "G2": "", "G3": "", "G4": "", "G5": "", "G6": "", "G7": "", "G8": "",\
-    "H1": "", "H2": "", "H3": "", "H4": "", "H5": "", "H6": "", "H7": "", "H8": ""\
+    Tiles.A1: "", Tiles.A2: "", Tiles.A3: "", Tiles.A4: "", Tiles.A5: "", Tiles.A6: "", Tiles.A7: "", Tiles.A8: "",\
+    Tiles.B1: "", Tiles.B2: "", Tiles.B3: "", Tiles.B4: "", Tiles.B5: "", Tiles.B6: "", Tiles.B7: "", Tiles.B8: "",\
+    Tiles.C1: "", Tiles.C2: "", Tiles.C3: "", Tiles.C4: "", Tiles.C5: "", Tiles.C6: "", Tiles.C7: "", Tiles.C8: "",\
+    Tiles.D1: "", Tiles.D2: "", Tiles.D3: "", Tiles.D4: "", Tiles.D5: "", Tiles.D6: "", Tiles.D7: "", Tiles.D8: "",\
+    Tiles.E1: "", Tiles.E2: "", Tiles.E3: "", Tiles.E4: "", Tiles.E5: "", Tiles.E6: "", Tiles.E7: "", Tiles.E8: "",\
+    Tiles.F1: "", Tiles.F2: "", Tiles.F3: "", Tiles.F4: "", Tiles.F5: "", Tiles.F6: "", Tiles.F7: "", Tiles.F8: "",\
+    Tiles.G1: "", Tiles.G2: "", Tiles.G3: "", Tiles.G4: "", Tiles.G5: "", Tiles.G6: "", Tiles.G7: "", Tiles.G8: "",\
+    Tiles.H1: "", Tiles.H2: "", Tiles.H3: "", Tiles.H4: "", Tiles.H5: "", Tiles.H6: "", Tiles.H7: "", Tiles.H8: ""\
     }
 
 # normal chess game setup
 DEFAULT_STATE = {\
-    "A1": "rook:white",     "A2": "pawn:white",     "A7": "pawn:black",     "A8": "rook:black",\
-    "B1": "knight:white",   "B2": "pawn:white",     "B7": "pawn:black",     "B8": "knight:black",\
-    "C1": "bishop:white",   "C2": "pawn:white",     "C7": "pawn:black",     "C8": "bishop:black",\
-    "D1": "queen:white",    "D2": "pawn:white",     "D7": "pawn:black",     "D8": "queen:black",\
-    "E1": "king:white",     "E2": "pawn:white",     "E7": "pawn:black",     "E8": "king:black",\
-    "F1": "bishop:white",   "F2": "pawn:white",     "F7": "pawn:black",     "F8": "bishop:black",\
-    "G1": "knight:white",   "G2": "pawn:white",     "G7": "pawn:black",     "G8": "knight:black",\
-    "H1": "rook:white",     "H2": "pawn:white",     "H7": "pawn:black",     "H8": "rook:black"\
+    Tiles.A1: "rook:pale",     Tiles.A2: "pawn:pale",     Tiles.A7: "pawn:dark",     Tiles.A8: "rook:dark",\
+    Tiles.B1: "knight:pale",   Tiles.B2: "pawn:pale",     Tiles.B7: "pawn:dark",     Tiles.B8: "knight:dark",\
+    Tiles.C1: "bishop:pale",   Tiles.C2: "pawn:pale",     Tiles.C7: "pawn:dark",     Tiles.C8: "bishop:dark",\
+    Tiles.D1: "queen:pale",    Tiles.D2: "pawn:pale",     Tiles.D7: "pawn:dark",     Tiles.D8: "queen:dark",\
+    Tiles.E1: "king:pale",     Tiles.E2: "pawn:pale",     Tiles.E7: "pawn:dark",     Tiles.E8: "king:dark",\
+    Tiles.F1: "bishop:pale",   Tiles.F2: "pawn:pale",     Tiles.F7: "pawn:dark",     Tiles.F8: "bishop:dark",\
+    Tiles.G1: "knight:pale",   Tiles.G2: "pawn:pale",     Tiles.G7: "pawn:dark",     Tiles.G8: "knight:dark",\
+    Tiles.H1: "rook:pale",     Tiles.H2: "pawn:pale",     Tiles.H7: "pawn:dark",     Tiles.H8: "rook:dark"\
     }

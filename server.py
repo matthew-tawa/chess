@@ -1,10 +1,10 @@
-import constants
+import Constants
 import socket
 import sys
 
 # create TCP/IP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_address = (constants.SERVER_ADDRESS, constants.SERVER_PORT)
+server_address = (Constants.SERVER_ADDRESS, Constants.SERVER_PORT)
 
 print('Starting server on %s port %s' % server_address)
 

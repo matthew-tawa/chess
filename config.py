@@ -1,10 +1,14 @@
 import pygame as pg
+import Constants
 
-# *** README
-# this config file determines key bindings and other
-# general settings. When changing key bindings, ens-
-# ure to use the pg.K_? where ? is the desired key.
-# ***
+# ***** README
+# This config file determines key bindings and other
+# general settings. 
+# When changing key bindings, ensure to use the pg.K_? 
+# where ? is the desired key.
+# When changing colors, can use any colors from the 
+# Constants file, or define your own as a tuple: (R,G,B)
+# *****
 
 # strokes for pieces
 KEY_CYCLE_PAWNS     = pg.K_p
@@ -18,6 +22,12 @@ KEY_CYCLE_KING      = pg.K_k
 KEY_FLIP_BOARD      = pg.K_f
 
 # window size (in pixels)
-WINDOW_SIZE_X = 800
-WINDOW_SIZE_Y = 800
-WINDOW_BACKGROUND_COLOR = (0, 0, 0) # R G B
+WINDOW_SIZE_X = 400
+WINDOW_SIZE_Y = 400
+
+# game element colors
+COLOR_WINDOW_BACKGROUND = Constants.COLOR_BLACK
+COLOR_PALE_TILE  = Constants.COLOR_WHITE
+COLOR_DARK_TILE  = Constants.COLOR_GREEN
+COLOR_PALE_PIECE = Constants.COLOR_YELLOW
+COLOR_DARK_PIECE = Constants.COLOR_BLACK

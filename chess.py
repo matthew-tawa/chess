@@ -1,6 +1,11 @@
 import pygame
-import config
-import board
+import pygame.freetype
+import Constants
+import Config
+import Board
+import Board_States
+
+import pieces
 
 # initializations
 def main():
@@ -8,23 +13,26 @@ def main():
     pygame.init()
 
     # create the screen
-    screen = pygame.display.set_mode((config.WINDOW_SIZE_X, config.WINDOW_SIZE_Y))
+    screen = pygame.display.set_mode((Config.WINDOW_SIZE_X, Config.WINDOW_SIZE_Y))
     pygame.display.set_caption("chess")
 
+    # creating the font
+    font = pygame.freetype.Font('font\Roboto-Regular.ttf', 24)
+
+    # creating the Board
+    b = Board.Board()
+    b.apply_Board_state(Board_States.DEFAULT_STATE)
+    #b.Board[Board.Tiles.A1] = pieces.Rook("A1", Constants.Color.PALE)
+    #b.Board[Board.Tiles.B1] = pieces.Knight("B1", Constants.Color.PALE)
+
     # game loop
-    game_loop()
-
-
-
-# game loop
-def game_loop():
     running = True
     while running:
 
-        b = board.Board()
-
-        for row in b.board.items():
-            for tile in row[1].items():
+        # printing the Board
+        screen.fill(Config.COLOR_WINDOW_BACKGROUND)
+        b.print(screen, font)
+                
                 
 
 
@@ -48,19 +56,19 @@ def game_loop():
 # handles when a key is pressed
 def handle_keypress(key):
     match key:
-        case config.KEY_CYCLE_PAWNS:
+        case Config.KEY_CYCLE_PAWNS:
             pass
-        case config.KEY_CYCLE_KNIGHT:
+        case Config.KEY_CYCLE_KNIGHT:
             pass
-        case config.KEY_CYCLE_BISHOP:
+        case Config.KEY_CYCLE_BISHOP:
             pass
-        case config.KEY_CYCLE_ROOK:
+        case Config.KEY_CYCLE_ROOK:
             pass
-        case config.KEY_CYCLE_QUEEN:
+        case Config.KEY_CYCLE_QUEEN:
             pass
-        case config.KEY_CYCLE_KING:
+        case Config.KEY_CYCLE_KING:
             pass
-        case config.KEY_FLIP_BOARD:
+        case Config.KEY_FLIP_Board:
             pass
 
     
@@ -70,3 +78,4 @@ def handle_keypress(key):
 
 
 main()
+pygame.quit()
