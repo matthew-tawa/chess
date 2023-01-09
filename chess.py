@@ -7,6 +7,15 @@ import Board
 import Board_States
 from Tiles import Tiles
 
+
+
+class ChessMatch():
+    def __init__(self) -> None:
+        pass
+
+
+
+
 # global variables
 b = Board.Board()
 cursor = Tiles.NOWHERE
@@ -26,22 +35,24 @@ def main():
     pygame.display.set_caption("chess")
 
     # creating the font
-    font = pygame.freetype.Font('font\Roboto-Regular.ttf', 24)
+    font_game = pygame.freetype.Font('font\Roboto-Regular.ttf', 24)
+    font_menu = pygame.freetype.Font('font\Roboto-Regular.ttf', 14)
 
     # creating the Board
     b.apply_board_state(Board_States.DEFAULT_STATE)
 
     # game loop
     running = True
-    in_game = False
+    in_game = True
     tick = 0
     while running:
 
         # printing the Board
         screen.fill(Config.COLOR_WINDOW_BACKGROUND)
-        b.print(screen, font)
 
         if (in_game):
+            # display the board
+            b.print(screen, font_game)
 
             # drawing the cursor
             if (cursor != Tiles.NOWHERE and tick%1000 in range(0,500)):
@@ -54,13 +65,24 @@ def main():
                 match event.type:
                     case pygame.QUIT:
                         running = False
-
                     case pygame.KEYUP:
-                        handle_keypress(event.key)
-
+                        handle_game_keypress(event.key)
                     case _:
                         pass
         else:
+            font_menu.render_to(screen, (0, 5), "1- Host a game", Config.COLOR_TEXT)
+            font_menu.render_to(screen, (0, 24), "2- Join a game", Config.COLOR_TEXT)
+            
+
+            # call event handlers
+            for event in pygame.event.get():
+                match event.type:
+                    case pygame.QUIT:
+                        running = False
+                    case pygame.KEYUP:
+                        handle_menu_keypress(event.key)
+                    case _:
+                        pass
             
         
         pygame.display.update()
@@ -68,8 +90,8 @@ def main():
 
 
 
-# handles when a key is pressed
-def handle_keypress(key):
+# handles when a key is pressed in a game
+def handle_game_keypress(key):
     global b, cursor, last_selected_piece
 
     # finding the new starting position to look for pieces
@@ -109,6 +131,18 @@ def handle_keypress(key):
             print(last_selected_piece)
         case Config.KEY_FLIP_BOARD:
             b.flipped = not b.flipped
+        case Config.KEY_SELECT:
+            pass
+        case Config.KEY_BACK:
+            pass
+
+# handles when a key is pressed in a menu
+def handle_menu_keypress(key):
+    match key:
+        case pygame.K_1:
+            pass
+        case pygame.K_2:
+            pass
         case Config.KEY_SELECT:
             pass
         case Config.KEY_BACK:

@@ -2,29 +2,44 @@ import Constants
 import socket
 import sys
 
-# create TCP/IP socket
-sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_address = (Constants.SERVER_ADDRESS, Constants.SERVER_PORT)
 
-print('Starting server on %s port %s' % server_address)
+class Server():
+    def __init__(self, ip, port) -> None:
+        self.ip = ip
+        self.port = port
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-sock.bind(server_address)
-sock.listen(1)
+        self.game_loop()
+        
 
-# find connections
-connection, client_address = sock.accept()
+    def game_loop(self):
+        print('Starting server on %s port %s.' % (self.ip, self.port))
+        self.sock.bind((self.ip, self.port))
+        self.sock.listen(1)
 
-while True:
-    try:
-        message = connection.recv(999).decode()
-        print(message)
+        # find connections
+        connection, client_address = self.sock.accept()
+        print('Client with address %s connected.' % client_address)
 
-        if message == 'quit':
-            break
 
-    except:
+        while True:
+            try:
+                message = connection.recv(999).decode()
+                print(message)
+
+                if message == 'quit':
+                    break
+
+            except:
+                connection.close()
+
+        print('Connection closed.')
         connection.close()
+        self.sock.close()
 
-connection.close()
+
+
+
+
 
 
