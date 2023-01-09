@@ -1,4 +1,4 @@
-import Tiles
+from Tiles import Tiles
 
 # completely empty board
 EMPTY_STATE = {\

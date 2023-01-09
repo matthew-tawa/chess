@@ -66,3 +66,4 @@ class Tiles(Enum):
     F1 = 61
     G1 = 62
     H1 = 63
+    NOWHERE = -1

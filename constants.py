@@ -23,11 +23,12 @@ BOARD_Y = 8
 SERVER_ADDRESS  = '192.168.1.15'
 SERVER_PORT     = 6969
 
-# colors        R    G    B
-COLOR_WHITE  = (255, 255, 255)
-COLOR_BLACK  = (0  , 0  , 0)
-COLOR_GREEN  = (22 , 111, 0)
-COLOR_YELLOW = (255, 204, 0)
+# colors           R    G    B
+COLOR_WHITE     = (255, 255, 255)
+COLOR_BLACK     = (0  , 0  , 0)
+COLOR_GREEN     = (22 , 111, 0)
+COLOR_YELLOW    = (255, 204, 0)
+COLOR_PALE_BLUE = (204, 243, 246)
 
 
 

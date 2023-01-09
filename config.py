@@ -17,6 +17,8 @@ KEY_CYCLE_BISHOP    = pg.K_b
 KEY_CYCLE_ROOK      = pg.K_r
 KEY_CYCLE_QUEEN     = pg.K_q
 KEY_CYCLE_KING      = pg.K_k
+KEY_SELECT          = pg.K_KP_ENTER
+KEY_BACK            = pg.K_ESCAPE
 
 # commands
 KEY_FLIP_BOARD      = pg.K_f
@@ -31,3 +33,4 @@ COLOR_PALE_TILE  = Constants.COLOR_WHITE
 COLOR_DARK_TILE  = Constants.COLOR_GREEN
 COLOR_PALE_PIECE = Constants.COLOR_YELLOW
 COLOR_DARK_PIECE = Constants.COLOR_BLACK
+COLOR_CURSOR     = Constants.COLOR_PALE_BLUE
