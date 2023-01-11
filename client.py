@@ -1,6 +1,5 @@
 import Constants
 import socket
-import sys
 
 
 class Client():
@@ -8,12 +7,14 @@ class Client():
         self.ip = ip
         self.port = port
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.game_loop()
 
-    def game_loop(self):
+    # connects to server
+    def join_server(self):
         print('Connecting to %s port %s' % (self.ip, self.port))
         self.sock.connect((self.ip, self.port))
 
+    # runs the game
+    def game_loop(self):
         while True:
             try:
                 message = input('Message: ')

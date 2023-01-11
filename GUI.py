@@ -6,10 +6,12 @@ import Config
 import server
 import client
 
-# globals
-font_menu = pygame.freetype.Font('font\Roboto-Regular.ttf', 14)
 # initialize pygame
 pygame.init()
+
+# globals
+font_menu = pygame.freetype.Font('font\Roboto-Regular.ttf', 14)
+font_game = pygame.freetype.Font('font\Roboto-Regular.ttf', 24)
 
 # create the screen
 screen = pygame.display.set_mode((Config.WINDOW_SIZE_X, Config.WINDOW_SIZE_Y))
@@ -18,44 +20,35 @@ pygame.display.set_caption("chess")
 
 # initializations
 def main():
-    global b
-
-    # initialize pygame
-    pygame.init()
-
-    # create the screen
-    screen = pygame.display.set_mode((Config.WINDOW_SIZE_X, Config.WINDOW_SIZE_Y))
-    pygame.display.set_caption("chess")
-
-    # creating the font
-    font_game = pygame.freetype.Font('font\Roboto-Regular.ttf', 24)
-    font_menu = pygame.freetype.Font('font\Roboto-Regular.ttf', 14)
+    global b, screen, font_menu, font_game
 
     font_menu.render_to(screen, (0, 5), "1- Host a game", Config.COLOR_TEXT)
     font_menu.render_to(screen, (0, 24), "2- Join a game", Config.COLOR_TEXT)
     
     user_input = ""
 
-    # call event handlers
-    for event in pygame.event.get():
-        match event.type:
-            case pygame.QUIT:
-                running = False
-            case pygame.KEYUP:
-                match handle_menu_keypress(event.key):
-                    case 1:
-                        ip, port = get_hosting_information()
-                        s = server.Server(ip ,port)
-                    case 2:
-                        ip, port = get_hosting_information()
-                        c = client.Client(ip, port)
-                    case _:
-                        pass # ignore
-            case _:
-                pass # ignore
+    running = True
+    while running:
+        # call event handlers
+        for event in pygame.event.get():
+            match event.type:
+                case pygame.QUIT:
+                    running = False
+                case pygame.KEYUP:
+                    match handle_menu_keypress(event.key):
+                        case 1:
+                            ip, port = get_hosting_information()
+                            s = server.Server(ip ,port)
+                            s.game_loop()
+                        case 2:
+                            ip, port = get_hosting_information()
+                            c = client.Client(ip, port)
+                        case _:
+                            pass # ignore
+                case _:
+                    pass # ignore
             
-        
-    pygame.display.update()
+        pygame.display.update()
 
 # handles when a key is pressed in a menu
 def handle_menu_keypress(key):
