@@ -83,6 +83,8 @@ class Board:
     # print the board to the screen
     # print_surface -> surface to print to
     def print(self, print_surface: pygame.surface, print_font: pygame.freetype, xoffset = 0, yoffset = 0) -> None:
+        tile_width = 24 # unit is pixels
+
         # printing board
         for tile in self.board:
             row_num = tile.value % 8
@@ -91,18 +93,22 @@ class Board:
             color_piece = Config.COLOR_DARK_PIECE if self.board[tile].color == Constants.Color.DARK else Config.COLOR_PALE_PIECE
             color_tile = Config.COLOR_DARK_TILE if ((col_num+row_num)%2) == (not self.flipped) else Config.COLOR_PALE_TILE
 
-            x = (row_num if (not self.flipped) else (7-row_num)) * 24 + xoffset
-            y = (col_num if (not self.flipped) else (7-col_num)) * 24 + yoffset
+            x = (row_num if (not self.flipped) else (7-row_num)) * tile_width + xoffset
+            y = (col_num if (not self.flipped) else (7-col_num)) * tile_width + yoffset
 
-            pygame.draw.rect(print_surface, color_tile, pygame.Rect(x, y, 24, 24))
+            pygame.draw.rect(print_surface, color_tile, pygame.Rect(x, y, tile_width, tile_width))
             print_font.render_to(print_surface, (x, y), text, color_piece)
         
         # printing coordinates
+        # offsets to account for the width of the characters to center them in the 24x24 square
+        char_offset_x = 8
+        char_offset_y = 5
+
         letter_coords = [(x,y, x if not self.flipped else 9-x) for y in range(0,10,9) for x in range(1,9) ]
         number_coords = [(x,y, (9-y) if not self.flipped else y) for x in range(0,10,9) for y in range(1,9) ]
 
-        letter_coords = [(x*24, y*24, z) for (x,y,z) in letter_coords]
-        number_coords = [(x*24, y*24, z) for (x,y,z) in number_coords]
+        letter_coords = [(x*tile_width + char_offset_x, y*tile_width + char_offset_y, z) for (x,y,z) in letter_coords]
+        number_coords = [(x*tile_width + char_offset_x, y*tile_width + char_offset_y, z) for (x,y,z) in number_coords]
         
         for letter in letter_coords:
             print_font.render_to(print_surface, (letter[0], letter[1]), chr(letter[2]+64), Config.COLOR_TEXT)

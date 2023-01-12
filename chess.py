@@ -1,4 +1,5 @@
 import pygame
+import pygame.freetype
 import pygame_textinput
 import Board
 import Board_States
@@ -15,6 +16,13 @@ class Chess():
     def init_board(self, state):
         self.board.apply_board_state(state)
 
+    # show the board
+    def print_board(self, surface: pygame.surface, font: pygame.freetype):
+        xoffset = 24
+        yoffset = 24
+        self.board.print(surface, font, xoffset, yoffset)
+
+    # goes through the motions of a users turn
     def myturn(self):
         # display that its my turn
         # wait for user to press enter
@@ -31,7 +39,7 @@ class Chess():
                         running = False
                     case pygame.KEYUP:
                         if event.key == pygame.K_RETURN:
-
+                            pass
                     case _:
                         pass
 

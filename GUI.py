@@ -1,10 +1,11 @@
 import pygame
 import pygame.freetype
-import math
-import Constants
+import pygame_textinput
 import Config
 import server
 import client
+import Chess
+import Constants
 
 # initialize pygame
 pygame.init()
@@ -17,29 +18,46 @@ font_game = pygame.freetype.Font('font\Roboto-Regular.ttf', 24)
 screen = pygame.display.set_mode((Config.WINDOW_SIZE_X, Config.WINDOW_SIZE_Y))
 pygame.display.set_caption("chess")
 
-
 # initializations
 def main():
-    global b, screen, font_menu, font_game
-
-    font_menu.render_to(screen, (0, 5), "1- Host a game", Config.COLOR_TEXT)
-    font_menu.render_to(screen, (0, 24), "2- Join a game", Config.COLOR_TEXT)
+    global screen, font_menu, font_game
     
+    # just for displaying a board, wont be the real playing board
+    c = Chess.Chess(Constants.Color.NONE)
+
     user_input = ""
 
     running = True
     while running:
+        update_display_pre(c)
+
+        font_menu.render_to(screen, (0, 250), "1- Host a game", Config.COLOR_TEXT)
+        font_menu.render_to(screen, (0, 275), "2- Join a game", Config.COLOR_TEXT)
+
         # call event handlers
         for event in pygame.event.get():
-            match event.type:
-                case pygame.QUIT:
-                    running = False
-                case pygame.KEYUP:
-                    handle_menu_keypress(event.key)
-                case _:
-                    pass # ignore
+            if event.type == pygame.QUIT:
+                running = False
             
-        pygame.display.update()
+            if event.type == pygame.KEYUP:
+                handle_menu_keypress(event.key)
+
+        
+        update_display_post()
+
+
+# if you want to update the display, call this function, perform your code, then call update_display_post()
+def update_display_pre(c: Chess.Chess = None):
+    screen.fill(Config.COLOR_WINDOW_BACKGROUND)
+
+    if c != None:
+        # display the board because it looks nice :)
+        c.print_board(screen, font_menu)
+
+# if you want to update the display, call update_display_pre(), perform your code, then call this function
+def update_display_post():
+    pygame.display.update()
+
 
 # handles when a key is pressed in a menu
 def handle_menu_keypress(key):
@@ -60,31 +78,44 @@ def handle_menu_keypress(key):
 # returns the ip address and port number
 # return -> (ip, port) as tuple
 def get_hosting_information() -> tuple[str, str]:
-    ip = get_user_input("Enter IP:")
-    port = get_user_input("Enter Port:")
+    ip = get_user_input("Enter IPv4 address...")
+    port = get_user_input("Enter Port number (>1024)...")
     return (ip, port)
 
 # function used to get one string from user
 # prompt -> prompt to disply to user
 def get_user_input(prompt: str) -> str:
-    global screen, font_menu
+    global font_menu
 
-    user_input = ""
+    # the TextInputVisualizer needs a pygame.font type, not a pygame.freetype, so need to create it
+    font_input = pygame.font.Font('font\Roboto-Regular.ttf', 14)
 
-    getting_info = True
-    while getting_info:
-        for event in pygame.event.get():
+    textinput = pygame_textinput.TextInputVisualizer(None, font_input, True, Config.COLOR_TEXT, 300, 3, Config.COLOR_TEXT)
+
+    result = ""
+    user_typing = True
+    while user_typing:
+        update_display_pre()
+
+        font_menu.render_to(screen, (5, 5), prompt, Config.COLOR_TEXT)
+
+        events = pygame.event.get()
+        textinput.update(events)
+        screen.blit(textinput.surface, (5,25))
+
+        # need to check if user clicked enter
+        for event in events:
             match event.type:
-                case pygame.K_RETURN:
-                    return user_input
-                case pygame.K_BACKSPACE:
-                    user_input = user_input[:-1]
-                case pygame.TEXTINPUT:
-                    user_input += event.text
-                case pygame.K_ESCAPE:
-                    getting_info = False
-            
-        font_menu.render_to(screen, (0, 24), user_input, Config.COLOR_TEXT)
+                case pygame.QUIT:
+                    exit()
+                case pygame.KEYDOWN:
+                    if event.key == pygame.K_RETURN:
+                        result = textinput.value
+                        user_typing = False
+
+        update_display_post()
+    
+    return result
 
 
     
