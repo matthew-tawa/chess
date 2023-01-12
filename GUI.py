@@ -35,16 +35,7 @@ def main():
                 case pygame.QUIT:
                     running = False
                 case pygame.KEYUP:
-                    match handle_menu_keypress(event.key):
-                        case 1:
-                            ip, port = get_hosting_information()
-                            s = server.Server(ip ,port)
-                            s.game_loop()
-                        case 2:
-                            ip, port = get_hosting_information()
-                            c = client.Client(ip, port)
-                        case _:
-                            pass # ignore
+                    handle_menu_keypress(event.key)
                 case _:
                     pass # ignore
             
@@ -52,16 +43,19 @@ def main():
 
 # handles when a key is pressed in a menu
 def handle_menu_keypress(key):
-    result = -1
     match key:
         case pygame.K_1:
-            result = 1
+            ip, port = get_hosting_information()
+            s = server.Server(ip ,port)
+            s.game_loop()
         case pygame.K_2:
-            result = 2
+            ip, port = get_hosting_information()
+            c = client.Client(ip, port)
+            c.game_loop()
         case _:
             pass
     
-    return result
+    return
 
 # returns the ip address and port number
 # return -> (ip, port) as tuple

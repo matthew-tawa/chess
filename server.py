@@ -1,6 +1,6 @@
-import Constants
 import socket
-import
+import Chess
+import Constants
 
 
 class Server():
@@ -12,6 +12,9 @@ class Server():
         # client info (to be populated on connection)
         self.conn = None
         self.addr = None
+
+        # chess game
+        self.chess = Chess.Chess(Constants.Color.PALE)
 
     # opens server and waits for a connection
     def start_server(self):
@@ -26,6 +29,9 @@ class Server():
     # runs the game
     def game_loop(self):
         while True:
+            self.chess.myturn()
+            
+
             try:
                 message = self.conn.recv(1024).decode()
                 print(message)

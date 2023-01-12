@@ -1,5 +1,6 @@
 import pygame
 import pygame.freetype
+import pygame_textinput
 import math
 import Constants
 import Config
@@ -31,6 +32,9 @@ def main():
     font_game = pygame.freetype.Font('font\Roboto-Regular.ttf', 24)
     font_menu = pygame.freetype.Font('font\Roboto-Regular.ttf', 14)
 
+    # creating the text input
+    textinput = pygame_textinput.TextInputVisualizer(None, None, True, (255,255,255))
+
     # creating the Board
     b.apply_board_state(Board_States.DEFAULT_STATE)
 
@@ -40,21 +44,30 @@ def main():
     tick = 0
     while running:
 
+        events = pygame.event.get()
+
         # printing the Board
         screen.fill(Config.COLOR_WINDOW_BACKGROUND)
 
+
+        textinput.update(events)
+        screen.blit(textinput.surface, (200,300))
+
+
         if (in_game):
             # display the board
-            b.print(screen, font_game)
+            xoffset = 24
+            yoffset = 24
+            b.print(screen, font_game, xoffset, yoffset)
 
             # drawing the cursor
             if (cursor != Tiles.NOWHERE and tick%1000 in range(0,500)):
-                cursor_x = 24 * (cursor.value % 8)
-                cursor_y = 24 * math.floor(cursor.value / 8)
+                cursor_x = 24 * (cursor.value % 8) + xoffset
+                cursor_y = 24 * math.floor(cursor.value / 8) + yoffset
                 pygame.draw.rect(screen, Config.COLOR_CURSOR, pygame.Rect(cursor_x, cursor_y,24 ,24))
 
             # call event handlers
-            for event in pygame.event.get():
+            for event in events:
                 match event.type:
                     case pygame.QUIT:
                         running = False
@@ -68,7 +81,7 @@ def main():
             
 
             # call event handlers
-            for event in pygame.event.get():
+            for event in events:
                 match event.type:
                     case pygame.QUIT:
                         running = False

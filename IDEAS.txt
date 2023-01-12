@@ -1,0 +1,17 @@
+IDEAS
+
+
+- save current games state button
+    -> click it to save the current state in the format of a Board_State to be able to replay positions later
+
+- chess clock
+
+- count points
+- display pieces captured
+- replay button
+- pick the side
+
+- text entry for moves
+    -> display the history of the game on the right side
+    -> after the game can press E to export the game
+- highlight the last move played (old square, new square)
