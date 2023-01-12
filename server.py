@@ -24,7 +24,7 @@ class Server():
 
         # find connections
         self.conn, self.addr = self.sock.accept()
-        print('Client with address %s connected.' % self.addr)
+        print('Client with address %s connected.' % self.addr[0])
 
     # runs the game
     def game_loop(self):

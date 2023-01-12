@@ -65,10 +65,12 @@ def handle_menu_keypress(key):
         case pygame.K_1:
             ip, port = get_hosting_information()
             s = server.Server(ip ,port)
+            s.start_server()
             s.game_loop()
         case pygame.K_2:
             ip, port = get_hosting_information()
             c = client.Client(ip, port)
+            c.join_server()
             c.game_loop()
         case _:
             pass
@@ -79,7 +81,7 @@ def handle_menu_keypress(key):
 # return -> (ip, port) as tuple
 def get_hosting_information() -> tuple[str, str]:
     ip = get_user_input("Enter IPv4 address...")
-    port = get_user_input("Enter Port number (>1024)...")
+    port = int(get_user_input("Enter Port number (>1024)..."))
     return (ip, port)
 
 # function used to get one string from user
