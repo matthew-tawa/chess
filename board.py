@@ -1,10 +1,9 @@
-import pygame
-import pygame.freetype
 import math
 import Constants
 import Config
 from Tiles import Tiles
 import Pieces
+import Display
 
 class Board:
     def __init__(self) -> None:
@@ -82,7 +81,7 @@ class Board:
 
     # print the board to the screen
     # print_surface -> surface to print to
-    def print(self, print_surface: pygame.surface, print_font: pygame.freetype, xoffset = 0, yoffset = 0) -> None:
+    def print(self, xoffset = 0, yoffset = 0) -> None:
         tile_width = 24 # unit is pixels
 
         # printing board
@@ -96,8 +95,8 @@ class Board:
             x = (row_num if (not self.flipped) else (7-row_num)) * tile_width + xoffset
             y = (col_num if (not self.flipped) else (7-col_num)) * tile_width + yoffset
 
-            pygame.draw.rect(print_surface, color_tile, pygame.Rect(x, y, tile_width, tile_width))
-            print_font.render_to(print_surface, (x, y), text, color_piece)
+            Display.draw_tile(color_tile, x, y, tile_width)
+            self.board[tile].print(x, y)
         
         # printing coordinates
         # offsets to account for the width of the characters to center them in the 24x24 square
@@ -111,8 +110,10 @@ class Board:
         number_coords = [(x*tile_width + char_offset_x, y*tile_width + char_offset_y, z) for (x,y,z) in number_coords]
         
         for letter in letter_coords:
-            print_font.render_to(print_surface, (letter[0], letter[1]), chr(letter[2]+64), Config.COLOR_TEXT)
+            #print_font.render_to(print_surface, (letter[0], letter[1]), chr(letter[2]+64), Config.COLOR_TEXT)
+            Display.render_to_screen(letter[0], letter[1], chr(letter[2]+64), Config.COLOR_TEXT)
         
         for number in number_coords:
-            print_font.render_to(print_surface, (number[0], number[1]), str(number[2]) , Config.COLOR_TEXT)
+            #print_font.render_to(print_surface, (number[0], number[1]), str(number[2]) , Config.COLOR_TEXT)
+            Display.render_to_screen(number[0], number[1], str(number[2]), Config.COLOR_TEXT)
     

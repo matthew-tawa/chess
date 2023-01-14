@@ -38,6 +38,9 @@ def main():
     # creating the Board
     b.apply_board_state(Board_States.DEFAULT_STATE)
 
+    # creating an image
+    image = pygame.image.load(Constants.IMAGE_BISHOP_DARK)
+
     # game loop
     running = True
     in_game = True
@@ -48,7 +51,7 @@ def main():
 
         # printing the Board
         screen.fill(Config.COLOR_WINDOW_BACKGROUND)
-
+        screen.blit(image, (100, 100))
 
         textinput.update(events)
         screen.blit(textinput.surface, (200,300))
@@ -58,7 +61,7 @@ def main():
             # display the board
             xoffset = 24
             yoffset = 24
-            b.print(screen, font_game, xoffset, yoffset)
+            b.print(xoffset, yoffset)
 
             # drawing the cursor
             if (cursor != Tiles.NOWHERE and tick%1000 in range(0,500)):

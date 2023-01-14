@@ -1,49 +1,36 @@
 import pygame
 import pygame.freetype
-import pygame_textinput
 import Board
-import Board_States
 import Constants
 
 
 
 class Chess():
-    def __init__(self, side: Constants.Color) -> None:
+    def __init__(self, my_side: Constants.Color) -> None:
         self.board = Board.Board()
-        self.side = side
+        self.my_side = my_side
+        self.move_list = []
 
     # set the board up with a specific state
     def init_board(self, state):
         self.board.apply_board_state(state)
 
     # show the board
-    def print_board(self, surface: pygame.surface, font: pygame.freetype):
+    def print(self):
+        # print the move list
+        pass
+
+        # print the board
         xoffset = 24
         yoffset = 24
-        self.board.print(surface, font, xoffset, yoffset)
+        self.board.print(xoffset, yoffset)
 
-    # goes through the motions of a users turn
-    def myturn(self):
-        # display that its my turn
-        # wait for user to press enter
-        # if a piece isnt selected, do nothing
-        # if piece is selected display possible moves
-        # user chooses a move
-        # send
+    # executes my move
+    def my_move(self, move):
+        pass
 
-        running = True
-        while running:
-            for event in pygame.event.get():
-                match event.type:
-                    case pygame.QUIT:
-                        running = False
-                    case pygame.KEYUP:
-                        if event.key == pygame.K_RETURN:
-                            pass
-                    case _:
-                        pass
-
-
+    # executes opponents move
+    def opp_move(self, move):
         pass
 
 
