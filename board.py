@@ -71,11 +71,16 @@ class Board:
 
         # piece not on board
         return Tiles.NOWHERE
+
+    
+    def get_piece_tile_for_move(self, piece: str, color: Constants.Color, end_tile: Tiles):
+        
         
 
     # move a piece from once position to another
     def move_piece(self, from_tile: Tiles, to_tile: Tiles):
-        pass
+        self.board[to_tile] = self.board[from_tile]
+        self.board[from_tile] = Pieces.Empty()
 
         
 

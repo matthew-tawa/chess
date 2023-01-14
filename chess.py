@@ -1,7 +1,7 @@
-import pygame
-import pygame.freetype
 import Board
+import Tiles
 import Constants
+import Move
 
 
 
@@ -26,11 +26,14 @@ class Chess():
         self.board.print(xoffset, yoffset)
 
     # executes my move
-    def my_move(self, move):
-        pass
+    def my_move(self, move: Move.Move):
+        from_tile = 
+        to_tile = Tiles.Tiles(move.destination)
+        self.board.move_piece(from_tile,to_tile)
+        
 
     # executes opponents move
-    def opp_move(self, move):
+    def opp_move(self, move: Move):
         pass
 
 

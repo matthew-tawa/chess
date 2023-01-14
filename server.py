@@ -6,6 +6,7 @@ import Constants
 import Board_States
 import Display
 import Config
+import Move
 
 
 class Server():
@@ -55,21 +56,21 @@ class Server():
 
             # need to check if user clicked enter
             for event in events:
-                match event.type:
-                    case pygame.QUIT:
+                if event.type == pygame.QUIT:
                         exit()
-                    case pygame.KEYDOWN:
-                        if event.key == pygame.K_RETURN:
-                            if my_turn:
-                                my_move = textinput.value
-                                #TODO validate my_mvoe is a valid move
-                                textinput.value = ""
-                                self.conn.sendall(my_move.encode())
-                                self.chess.my_move(my_move)
-                                my_turn = False
-
-                        if event.key == pygame.K_ESCAPE:
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_RETURN:
+                        if my_turn:
+                            my_move = Move(textinput.value)
+                            #TODO get the status of check, checkmate, capture, etc
+                            #TODO validate my_mvoe is a valid move
                             textinput.value = ""
+                            self.chess.my_move(my_move)
+                            self.conn.sendall(str(my_move).encode())
+                            my_turn = False
+
+                    if event.key == pygame.K_ESCAPE:
+                        textinput.value = ""
             
             try:
                 if not my_turn:
