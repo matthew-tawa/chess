@@ -1,4 +1,5 @@
 import socket
+import select
 import pygame
 import pygame_textinput
 import Chess
@@ -6,6 +7,7 @@ import Constants
 import Board_States
 import Display
 import Config
+import Move
 
 
 class Client():
@@ -21,6 +23,7 @@ class Client():
     def join_server(self):
         print('Connecting to %s port %s' % (self.ip, self.port))
         self.sock.connect((self.ip, self.port))
+        self.sock.setblocking(0)
 
     # runs the game
     def game_loop(self):
@@ -30,7 +33,7 @@ class Client():
         my_move = ""
         opp_move = ""
 
-        my_turn = True
+        my_turn = False
         while True:
             Display.update_display_pre()
 
@@ -39,42 +42,48 @@ class Client():
             textinput.update(events)
             
             # display the board
-            self.chess.print(Display.screen, Display.font_menu)
+            self.chess.print()
 
             # show text input
             Display.blit_to_screen(5, 250, textinput.surface)
 
             # need to check if user clicked enter
             for event in events:
-                match event.type:
-                    case pygame.QUIT:
+                if event.type == pygame.QUIT:
                         exit()
-                    case pygame.KEYDOWN:
-                        if event.key == pygame.K_RETURN:
-                            if my_turn:
-                                my_move = textinput.value
-                                #TODO validate my_mvoe is a valid move
-                                textinput.value = ""
-                                self.sock.sendall(my_move.encode())
-                                self.chess.my_move(my_move)
-                                my_turn = False
-
-                        if event.key == pygame.K_ESCAPE:
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_RETURN:
+                        if my_turn:
+                            my_move = Move.Move(textinput.value)
+                            #TODO get the status of check, checkmate, capture, etc
+                            #TODO validate my_mvoe is a valid move
                             textinput.value = ""
+                            self.chess.my_move(my_move)
+                            self.sock.sendall(str(my_move).encode())
+                            my_turn = False
+
+                    if event.key == pygame.K_ESCAPE:
+                        textinput.value = ""
 
 
             try:
                 if not my_turn:
-                    opp_move = self.sock.recv(1024).decode()
-                    self.chess.opp_move(opp_move)
-                    my_turn = True
+                    ready = select.select([self.sock], [], [], 0.1)
+                    if ready:
+                        opp_move = Move.Move(self.sock.recv(1024).decode())
+                        self.chess.opp_move(opp_move)
+                        my_turn = True
 
                 if opp_move == 'forfeit':
                     break
 
             except Exception as e:
-                print(e)
-                break
+                if e.errno == 10035:
+                    pass
+                else:
+                    print(e)
+                    break
+                
 
             Display.update_display_post()
 

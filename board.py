@@ -2,16 +2,14 @@ import math
 import Constants
 import Config
 from Tiles import Tiles
-import Pieces
 import Display
 
 class Board:
     def __init__(self) -> None:
         # creating board of empty Pieces
-
         self.board = {t: Pieces.Empty() for t in Tiles if t != Tiles.NOWHERE}
         self.flipped = False
-
+        
 
     # takes in a board state and sets the board up
     def apply_board_state(self, state) -> None:
@@ -72,15 +70,57 @@ class Board:
         # piece not on board
         return Tiles.NOWHERE
 
-    
-    def get_piece_tile_for_move(self, piece: str, color: Constants.Color, end_tile: Tiles):
+    # piece -> string of the piece to search for
+    # color -> color of the piece to find
+    # rank_or_file -> used as disambiguation in case multiple of piece can make the move
+    # return -> the tile of the valid piece, or NOWHERE if no piece matches criteria
+    def get_piece_tile_for_move(self, piece: str, color: Constants.Color, end_pos: Tiles, file_or_rank = None):
+        self.evaluate_moves()
         
+        potential_pos = None
+        while potential_pos != Tiles.NOWHERE:
+            potential_pos = self.get_next_piece_position(piece, color, Tiles(potential_pos.value+1) if potential_pos!=None else None)
+            temp_piece = self.board[potential_pos]
+            temp_bool = end_pos in temp_piece.valid_moves
+            if temp_bool:
+                file = self.board[potential_pos].file()
+                rank = self.board[potential_pos].rank()
+                
+                if file_or_rank != None and (file_or_rank == file or file_or_rank == rank):
+                    break   # file_or_rank not None, and condition succeeds
+                elif file_or_rank == None:
+                    break   # file_or_rank is None, no disambiguation needed
+
+        return potential_pos
+
+
         
 
     # move a piece from once position to another
-    def move_piece(self, from_tile: Tiles, to_tile: Tiles):
+    # from_tile -> tile to move from
+    # to_tile   -> tile to move to
+    # return    -> True if move executed, False if move not executed
+    def move_piece(self, from_tile: Tiles, to_tile: Tiles) -> bool:
+        if to_tile not in self.board[from_tile].valid_moves:
+            return False    
+            
         self.board[to_tile] = self.board[from_tile]
         self.board[from_tile] = Pieces.Empty()
+        self.board[to_tile].pos = to_tile
+        
+    # cycle through all pieces on board and evaluate the pieces moves
+    def evaluate_moves(self):
+        # calculate everything except the king, then do king and check for checks
+        for tile in self.board:
+            if not self.board[tile].is_empty() and self.board[tile].__class__.__name__.lower() != "king":
+                self.board[tile].evaluate_valid_moves(self)
+
+        # calculate the kings
+        for tile in self.board:
+            if self.board[tile].__class__.__name__.lower() == "king":
+                self.board[tile].evaluate_valid_moves(self)
+        
+
 
         
 
@@ -93,8 +133,6 @@ class Board:
         for tile in self.board:
             row_num = tile.value % 8
             col_num = math.floor(tile.value / 8)
-            text = self.board[tile].image
-            color_piece = Config.COLOR_DARK_PIECE if self.board[tile].color == Constants.Color.DARK else Config.COLOR_PALE_PIECE
             color_tile = Config.COLOR_DARK_TILE if ((col_num+row_num)%2) == (not self.flipped) else Config.COLOR_PALE_TILE
 
             x = (row_num if (not self.flipped) else (7-row_num)) * tile_width + xoffset
@@ -122,3 +160,7 @@ class Board:
             #print_font.render_to(print_surface, (number[0], number[1]), str(number[2]) , Config.COLOR_TEXT)
             Display.render_to_screen(number[0], number[1], str(number[2]), Config.COLOR_TEXT)
     
+
+
+
+import Pieces

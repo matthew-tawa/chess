@@ -1,4 +1,5 @@
 import socket
+import select
 import pygame
 import pygame_textinput
 import Chess
@@ -30,6 +31,7 @@ class Server():
 
         # find connections
         self.conn, self.addr = self.sock.accept()
+        self.conn.setblocking(0)
         print('Client with address %s connected.' % self.addr[0])
 
     # runs the game
@@ -49,7 +51,7 @@ class Server():
             textinput.update(events)
 
             # display the board
-            self.chess.print(Display.screen, Display.font_menu)
+            self.chess.print()
 
             # show text input
             Display.blit_to_screen(5, 250, textinput.surface)
@@ -61,7 +63,7 @@ class Server():
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_RETURN:
                         if my_turn:
-                            my_move = Move(textinput.value)
+                            my_move = Move.Move(textinput.value)
                             #TODO get the status of check, checkmate, capture, etc
                             #TODO validate my_mvoe is a valid move
                             textinput.value = ""
@@ -71,21 +73,27 @@ class Server():
 
                     if event.key == pygame.K_ESCAPE:
                         textinput.value = ""
+
+            Display.update_display_post()
             
             try:
                 if not my_turn:
-                    opp_move = self.conn.recv(1024).decode()
-                    self.chess.opp_move(opp_move)
-                    my_turn = True
+                    ready = select.select([self.conn], [], [], 0.1)
+                    if ready:
+                        opp_move = Move.Move(self.conn.recv(1024).decode())
+                        self.chess.opp_move(opp_move)
+                        my_turn = True
 
                 if opp_move == 'forfeit':
                     break
 
             except Exception as e:
-                print(e)
-                break
-
-            Display.update_display_post()
+                if e.errno == 10035:
+                    pass
+                else:
+                    print(e)
+                    break
+                
 
 
 

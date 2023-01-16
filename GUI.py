@@ -1,9 +1,9 @@
 import pygame
+
+pygame.init()
+
 import pygame.freetype
 import pygame_textinput
-
-# initialize pygame before importing pygame stuff
-pygame.init()
 
 import Config
 import server
@@ -15,8 +15,6 @@ import Display
 
 # initializations
 def main():
-    #global screen, font_menu, font_game
-
     # creating an empty board just for displaying purposes, wont be the real playing board
     c = Chess.Chess(Constants.Color.NONE)
 
@@ -44,15 +42,17 @@ def main():
 def handle_menu_keypress(key):
     match key:
         case pygame.K_1:
-            ip, port = get_hosting_information()
-
+            #ip, port = get_hosting_information()
+            ip = Constants.SERVER_ADDRESS
+            port = Constants.SERVER_PORT
             if ip != None and port != None:
                 s = server.Server(ip ,port)
                 s.start_server()
                 s.game_loop()
         case pygame.K_2:
-            ip, port = get_hosting_information()
-
+            #ip, port = get_hosting_information()
+            ip = Constants.SERVER_ADDRESS
+            port = Constants.SERVER_PORT
             if ip != None and port != None:
                 c = client.Client(ip, port)
                 c.join_server()

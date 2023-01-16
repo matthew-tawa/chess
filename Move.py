@@ -1,4 +1,4 @@
-
+from Tiles import Tiles
 
 
 
@@ -14,8 +14,6 @@ class Move():
         self.castle_q = castle_q
         self.check = check
         self.checkmate = checkmate
-
-
 
     # convert move to string
     def __str__(self) -> str:
@@ -35,3 +33,23 @@ class Move():
             result += "+" if self.check else "++" if self.checkmate else ""
         
         return result
+
+    # return piece as string
+    def get_piece(self) -> str:
+        match self.piece:
+            case "":
+                return "pawn"
+            case "N":
+                return "knight"
+            case "B":
+                return "bishop"
+            case "R":
+                return "rook"
+            case "Q":
+                return "queen"
+            case "K":
+                return "king"
+
+    # return destination as Tiles
+    def get_destination(self) -> Tiles:
+        return Tiles((8 - int(self.destination[1])) * 8 + ord(self.destination[0]) - 65)
