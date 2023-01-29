@@ -14,5 +14,3 @@ IDEAS
 - text entry for moves
     -> display the history of the game on the right side
     -> after the game can press E to export the game
-- highlight the last move played (old square, new square)
-- get the images of the pieces

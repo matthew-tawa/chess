@@ -1,19 +1,36 @@
-from Tiles import Tiles
+import Tiles
+import Constants
+import math
+import re
 
 
 
 class Move():
 
-    def __init__(self, move_str, capture = False, castle_k = False, castle_q = False, check = False, checkmate = False) -> None:
-        self.piece = move_str[0] if len(move_str) > 2 else ""
-        self.file_or_rank = move_str[1] if len(move_str) > 3 else ""
-        self.destination = move_str if len(move_str) == 2 else move_str[-2:]
-        self.ambiguous = len(move_str) > 3
-        self.capture = capture
-        self.castle_k = castle_k
-        self.castle_q = castle_q
-        self.check = check
-        self.checkmate = checkmate
+    def __init__(self, move_str, color: Constants.Color, capture = False, check = False, checkmate = False) -> None:
+
+        self.color = color
+        self.castle_q = "0-0-0" in move_str
+        self.castle_k = "0-0" in move_str and not self.castle_q
+        self.destination = None
+        self.promotion = False
+
+        matches = False
+        if "0-0" not in move_str:
+            pattern_text = "(?P<piece>.{1})(?P<file_or_rank>[A-H1-8]?)(?P<capture>x?)(?P<destination>[A-H][1-8])(?P<promotion>=?)(?P<check>\+?)(?P<checkmate>\+{0,2})"
+            pattern = re.compile(pattern_text)
+            matches = pattern.match(move_str)
+
+            self.piece = matches.group("piece") if matches and "piece" in matches.groupdict() else "K"
+            self.file_or_rank = matches.group("file_or_rank") if matches and "file_or_rank" in matches.groupdict() else None
+            self.capture = matches.group("capture") == "x" if matches and "capture" in matches.groupdict() else capture
+            self.destination = Tiles.str_to_tile(matches.group("destination")) if matches and "destination" in matches.groupdict() else None
+            self.promotion = self.get_piece() == "pawn" and math.floor(self.destination.value/8) == 0 if self.color == Constants.Color.PALE else 7
+            self.promotion_piece = matches.group("promotion")[-1] if matches and "promotion" in matches.groupdict() else ""
+            self.check = matches.group("capture") == "+" if matches and "check" in matches.groupdict() else check
+            self.checkmate = matches.group("capture") == "++" if matches and "checkmate" in matches.groupdict() else checkmate
+
+            self.ambiguous = self.file_or_rank != None and self.file_or_rank != ""
 
     # convert move to string
     def __str__(self) -> str:
@@ -29,7 +46,8 @@ class Move():
             result += self.piece
             result += self.file_or_rank
             result += "x" if self.capture else ""
-            result += self.destination
+            result += Tiles.tile_to_str(self.destination)
+            result += "=" + self.promotion_piece if self.promotion else ""
             result += "+" if self.check else "++" if self.checkmate else ""
         
         return result
@@ -38,6 +56,8 @@ class Move():
     def get_piece(self) -> str:
         match self.piece:
             case "":
+                return "pawn"
+            case "P":
                 return "pawn"
             case "N":
                 return "knight"
@@ -50,6 +70,4 @@ class Move():
             case "K":
                 return "king"
 
-    # return destination as Tiles
-    def get_destination(self) -> Tiles:
-        return Tiles((8 - int(self.destination[1])) * 8 + ord(self.destination[0]) - 65)
+        

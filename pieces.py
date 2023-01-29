@@ -54,6 +54,11 @@ class Pawn(Piece):
     def evaluate_valid_moves(self, board: Board.Board):
         self.valid_moves.clear()
 
+        pawn_on_enemy_last_rank = self.pos.value > 55 if self.color == Constants.Color.DARK else self.pos.value < 8
+        if pawn_on_enemy_last_rank:
+            # no valid moves (pawn about to be promoted)
+            return
+
         direction = 1 if self.color == Constants.Color.DARK else -1
 
         tile_fwd_one = Tiles(self.pos.value + direction*8) if (self.pos.value + direction*8) > -1 and (self.pos.value + direction*8) < 64 else None
@@ -70,10 +75,10 @@ class Pawn(Piece):
 
         # special movement of eating an enemy
         if board.board[tile_eat_fwd_right].color != self.color and not board.board[tile_eat_fwd_right].is_empty():
-            self.valid_moves.append(self.pos.value + 7)
+            self.valid_moves.append(tile_eat_fwd_right)
         
         if board.board[tile_eat_fwd_left].color != self.color and not board.board[tile_eat_fwd_left].is_empty():
-            self.valid_moves.append(self.pos.value + 9)
+            self.valid_moves.append(tile_eat_fwd_left)
 
         
 
@@ -448,7 +453,7 @@ class King(Piece):
     # board -> the current chess board
     # tile  -> tile to check for check
     # return -> True if the given tile is covered by at least one opposing piece, False otherwise 
-    def __tile_gives_check(self, board: Board.Board, tile_to_check: Tiles):
+    def __tile_gives_check(self, board: Board.Board, tile_to_check: Tiles) -> bool:
         for tile in board.board:
             # if tile is an opposing piece
             if board.board[tile].color != self.color and not board.board[tile].is_empty():
@@ -457,6 +462,14 @@ class King(Piece):
                     return True
 
         return False
+
+    # return -> True if king is currently in check, False otherwise
+    #def currently_in_check(self, board: Board.Board) -> bool:
+    #    for tile in board.board:
+    #        if board.board[tile].color != self.color and self.pos in board.board[tile].valid_moves:
+    #            return True
+    #
+    #    return False
 
             
 

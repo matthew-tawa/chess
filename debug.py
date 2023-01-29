@@ -22,7 +22,10 @@ def main():
     global b
 
     # initialize pygame
-    pygame.init()
+    #pygame.init()
+    pygame.display.init()
+    pygame.font.init()
+    pygame.freetype.init()
 
     # create the screen
     screen = pygame.display.set_mode((Config.WINDOW_SIZE_X, Config.WINDOW_SIZE_Y))

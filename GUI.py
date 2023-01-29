@@ -1,6 +1,10 @@
 import pygame
+import pygame.freetype
 
-pygame.init()
+#pygame.init()
+pygame.display.init()
+pygame.font.init()
+pygame.freetype.init()
 
 import pygame.freetype
 import pygame_textinput
@@ -15,6 +19,10 @@ import Display
 
 # initializations
 def main():
+    # set event types allowed in queue
+    pygame.event.set_blocked(None) # block all events
+    pygame.event.set_allowed([pygame.QUIT, pygame.KEYDOWN, pygame.KEYUP])
+
     # creating an empty board just for displaying purposes, wont be the real playing board
     c = Chess.Chess(Constants.Color.NONE)
 

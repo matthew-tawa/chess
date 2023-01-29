@@ -24,7 +24,7 @@ KEY_BACK            = pg.K_ESCAPE
 KEY_FLIP_BOARD      = pg.K_f
 
 # window size (in pixels)
-WINDOW_SIZE_X = 400
+WINDOW_SIZE_X = 500
 WINDOW_SIZE_Y = 400
 
 # game element colors

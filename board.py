@@ -77,19 +77,25 @@ class Board:
     def get_piece_tile_for_move(self, piece: str, color: Constants.Color, end_pos: Tiles, file_or_rank = None):
         self.evaluate_moves()
         
+        tiles_checked = []
+
         potential_pos = None
         while potential_pos != Tiles.NOWHERE:
-            potential_pos = self.get_next_piece_position(piece, color, Tiles(potential_pos.value+1) if potential_pos!=None else None)
-            temp_piece = self.board[potential_pos]
-            temp_bool = end_pos in temp_piece.valid_moves
-            if temp_bool:
-                file = self.board[potential_pos].file()
-                rank = self.board[potential_pos].rank()
-                
-                if file_or_rank != None and (file_or_rank == file or file_or_rank == rank):
-                    break   # file_or_rank not None, and condition succeeds
-                elif file_or_rank == None:
-                    break   # file_or_rank is None, no disambiguation needed
+            add_to_get_next_tile = 8 if potential_pos != None and potential_pos.value+8<64 else -55
+            potential_pos = self.get_next_piece_position(piece, color, Tiles(potential_pos.value+add_to_get_next_tile) if potential_pos!=None else None)
+            
+            if potential_pos not in tiles_checked:
+                tiles_checked.append(potential_pos)
+                if end_pos in self.board[potential_pos].valid_moves:
+                    file = self.board[potential_pos].file()
+                    rank = self.board[potential_pos].rank()
+                    
+                    if file_or_rank != None and (file_or_rank == file or file_or_rank == rank):
+                        break   # file_or_rank not None, and condition succeeds
+                    elif file_or_rank == None:
+                        break   # file_or_rank is None, no disambiguation needed
+            else:
+                potential_pos = Tiles.NOWHERE
 
         return potential_pos
 
@@ -100,13 +106,18 @@ class Board:
     # from_tile -> tile to move from
     # to_tile   -> tile to move to
     # return    -> True if move executed, False if move not executed
-    def move_piece(self, from_tile: Tiles, to_tile: Tiles) -> bool:
-        if to_tile not in self.board[from_tile].valid_moves:
+    def move_piece(self, from_tile: Tiles, to_tile: Tiles, check_valid_moves: bool = True) -> bool:
+        if check_valid_moves and to_tile not in self.board[from_tile].valid_moves:
             return False    
             
         self.board[to_tile] = self.board[from_tile]
         self.board[from_tile] = Pieces.Empty()
+        
         self.board[to_tile].pos = to_tile
+        self.board[to_tile].has_moved = True
+
+        self.evaluate_moves()
+        return True
         
     # cycle through all pieces on board and evaluate the pieces moves
     def evaluate_moves(self):
@@ -119,21 +130,121 @@ class Board:
         for tile in self.board:
             if self.board[tile].__class__.__name__.lower() == "king":
                 self.board[tile].evaluate_valid_moves(self)
+
+    # manage castling king side
+    def castle_king_side(self, side: Constants.Color) -> bool:
+        if not self.__valid_castle("king", side):
+            return False
+
+        # move rook
+        self.move_piece(\
+                Tiles.H1 if side == Constants.Color.PALE else Tiles.H8,\
+                Tiles.F1 if side == Constants.Color.PALE else Tiles.F8,\
+                False
+        )
+        
+        # move king
+        self.move_piece(\
+                Tiles.E1 if side == Constants.Color.PALE else Tiles.E8,\
+                Tiles.G1 if side == Constants.Color.PALE else Tiles.G8,\
+                False
+        )
+        return True
         
 
 
+    # manage castling queen side
+    def castle_queen_side(self, side: Constants.Color) -> bool:
+        if not self.__valid_castle("queen", side):
+            return False
+
+        # move rook
+        self.move_piece(\
+                Tiles.A1 if side == Constants.Color.PALE else Tiles.A8,\
+                Tiles.D1 if side == Constants.Color.PALE else Tiles.D8,\
+                False
+        )
+
+        # move king
+        self.move_piece(\
+                Tiles.E1 if side == Constants.Color.PALE else Tiles.E8,\
+                Tiles.C1 if side == Constants.Color.PALE else Tiles.C8,\
+                False
+        )
+        return True
+
+
+    # ***** CASTLING RULES *****
+    # 1. king and rook may not have moved before
+    # 2. all spaces between king and rook are empty
+    # 3. king is not currently in check
+    # 4. no tile the king passes through, or lands on, may be in check
+
+    # evaluates whether the player can castle on the given side
+    # return -> True if the caslte move is valid, False otherwise
+    def __valid_castle(self, castle_side, player_side: Constants.Color) -> bool:
+        tile_k = tile_b = tile_n = tile_r = tile_q = Tiles.NOWHERE
+        if castle_side == "king":
+            tile_k = Tiles.E1 if player_side == Constants.Color.PALE else Tiles.E8
+            tile_b = Tiles.F1 if player_side == Constants.Color.PALE else Tiles.F8
+            tile_n = Tiles.G1 if player_side == Constants.Color.PALE else Tiles.G8
+            tile_r = Tiles.H1 if player_side == Constants.Color.PALE else Tiles.H8
+        elif castle_side == "queen":
+            tile_k = Tiles.E1 if player_side == Constants.Color.PALE else Tiles.E8
+            tile_b = Tiles.C1 if player_side == Constants.Color.PALE else Tiles.C8
+            tile_n = Tiles.B1 if player_side == Constants.Color.PALE else Tiles.B8
+            tile_r = Tiles.A1 if player_side == Constants.Color.PALE else Tiles.A8
+            tile_q = Tiles.D1 if player_side == Constants.Color.PALE else Tiles.D8
+
+        # check rule 1
+        if self.board[tile_r].__class__.__name__.lower() != "rook" or self.board[tile_k].__class__.__name__.lower() != "king":
+            return False
+
+        if self.board[tile_k].has_moved or self.board[tile_r].has_moved:
+            return False
         
+        # check rule 2
+        if not self.board[tile_b].is_empty() or not self.board[tile_n].is_empty():
+            return False
+        
+        # check rule 3 and 4
+        tiles_covered = set()
+        for tile in self.board:
+            if self.board[tile].color != player_side:
+                for covered in self.board[tile].valid_moves:
+                    tiles_covered.add(covered)
+
+        cannot_castle = tile_k in tiles_covered or tile_b in tiles_covered or \
+            tile_n in tiles_covered or tile_r in tiles_covered or tile_q in tiles_covered
+        
+        if cannot_castle:
+            return False
+        else:
+            return True
+        
+
+    # promotes a pawn to another piece
+    # tile  -> Tile that the pawn is being promoted at
+    # piece -> 1 letter string of the piece to promote to
+    def promote(self, tile: Tiles, piece: Pieces):
+        self.board[tile] = piece
+    
 
     # print the board to the screen
     # print_surface -> surface to print to
-    def print(self, xoffset = 0, yoffset = 0) -> None:
+    def print(self, last_move = None, xoffset = 0, yoffset = 0) -> None:
         tile_width = 24 # unit is pixels
 
         # printing board
         for tile in self.board:
             row_num = tile.value % 8
             col_num = math.floor(tile.value / 8)
-            color_tile = Config.COLOR_DARK_TILE if ((col_num+row_num)%2) == (not self.flipped) else Config.COLOR_PALE_TILE
+
+            if last_move != None and tile in last_move:
+                color_tile = Config.COLOR_CURSOR
+            else:
+                color_tile = Config.COLOR_DARK_TILE if ((col_num+row_num)%2) == (not self.flipped) else Config.COLOR_PALE_TILE
+            
 
             x = (row_num if (not self.flipped) else (7-row_num)) * tile_width + xoffset
             y = (col_num if (not self.flipped) else (7-col_num)) * tile_width + yoffset
@@ -153,11 +264,9 @@ class Board:
         number_coords = [(x*tile_width + char_offset_x, y*tile_width + char_offset_y, z) for (x,y,z) in number_coords]
         
         for letter in letter_coords:
-            #print_font.render_to(print_surface, (letter[0], letter[1]), chr(letter[2]+64), Config.COLOR_TEXT)
             Display.render_to_screen(letter[0], letter[1], chr(letter[2]+64), Config.COLOR_TEXT)
         
         for number in number_coords:
-            #print_font.render_to(print_surface, (number[0], number[1]), str(number[2]) , Config.COLOR_TEXT)
             Display.render_to_screen(number[0], number[1], str(number[2]), Config.COLOR_TEXT)
     
 

@@ -1,4 +1,5 @@
 from enum import Enum
+from math import floor
 
 # enum holding all the tile names
 class Tiles(Enum):
@@ -66,4 +67,11 @@ class Tiles(Enum):
     F1 = 61
     G1 = 62
     H1 = 63
-    NOWHERE = -1
+    NOWHERE = -100
+
+
+def str_to_tile(s: str) -> Tiles:
+    return Tiles((8-int(s[1]))*8 + ord(s[0])-65)
+
+def tile_to_str(t: Tiles) -> str:
+    return chr(t.value%8 + 65) + str(8 - floor(t.value/8))
