@@ -9,9 +9,13 @@ class Board:
         # creating board of empty Pieces
         self.board = {t: Pieces.Empty() for t in Tiles if t != Tiles.NOWHERE}
         self.flipped = False
+
+        # for showing taken pieces
+        self.pale_pieces_taken = []
+        self.dark_pieces_taken = []
         
 
-    # takes in a board state and sets the board up
+    # takes in a board state and sets the board up, then evaluates moves
     def apply_board_state(self, state) -> None:
         for tile in state:
             p = Pieces.Empty()
@@ -37,6 +41,8 @@ class Board:
                     pass
 
             self.board[tile] = p
+        
+        self.evaluate_moves()
 
     # returns the position of the next piece of a given type. Next piece is 
     # ordered left-right, up-down
@@ -75,7 +81,7 @@ class Board:
     # rank_or_file -> used as disambiguation in case multiple of piece can make the move
     # return -> the tile of the valid piece, or NOWHERE if no piece matches criteria
     def get_piece_tile_for_move(self, piece: str, color: Constants.Color, end_pos: Tiles, file_or_rank = None):
-        self.evaluate_moves()
+        #self.evaluate_moves()
         
         tiles_checked = []
 
@@ -90,10 +96,9 @@ class Board:
                     file = self.board[potential_pos].file()
                     rank = self.board[potential_pos].rank()
                     
-                    if file_or_rank != None and (file_or_rank == file or file_or_rank == rank):
+                    if file_or_rank == None or file_or_rank == file or file_or_rank == rank or file_or_rank == (file + rank):
                         break   # file_or_rank not None, and condition succeeds
-                    elif file_or_rank == None:
-                        break   # file_or_rank is None, no disambiguation needed
+
             else:
                 potential_pos = Tiles.NOWHERE
 
@@ -105,19 +110,31 @@ class Board:
     # move a piece from once position to another
     # from_tile -> tile to move from
     # to_tile   -> tile to move to
-    # return    -> True if move executed, False if move not executed
+    # return    -> score if move executed, -1 if move not executed
     def move_piece(self, from_tile: Tiles, to_tile: Tiles, check_valid_moves: bool = True) -> bool:
         if check_valid_moves and to_tile not in self.board[from_tile].valid_moves:
-            return False    
-            
+            return -1  
+        
+        if not self.board[to_tile].is_empty():
+            if self.board[to_tile].color == Constants.Color.PALE:
+                self.pale_pieces_taken.append(self.board[to_tile])
+            else:
+                self.dark_pieces_taken.append(self.board[to_tile])    
+
+        # retaining the taken tiles score
+        score = self.board[to_tile].score
+
+        # taking the tile
         self.board[to_tile] = self.board[from_tile]
         self.board[from_tile] = Pieces.Empty()
         
+        # updating the moved pieces attributes
         self.board[to_tile].pos = to_tile
         self.board[to_tile].has_moved = True
 
+        # reevaluating all pieces moves
         self.evaluate_moves()
-        return True
+        return score
         
     # cycle through all pieces on board and evaluate the pieces moves
     def evaluate_moves(self):
@@ -226,8 +243,9 @@ class Board:
     # promotes a pawn to another piece
     # tile  -> Tile that the pawn is being promoted at
     # piece -> 1 letter string of the piece to promote to
-    def promote(self, tile: Tiles, piece: Pieces):
+    def promote(self, tile: Tiles, piece):
         self.board[tile] = piece
+        self.evaluate_moves()
     
 
     # print the board to the screen
@@ -268,6 +286,19 @@ class Board:
         
         for number in number_coords:
             Display.render_to_screen(number[0], number[1], str(number[2]), Config.COLOR_TEXT)
+
+        # printing capture pieces
+        # 4 rows, each row 25 tall, 5 offset from left border, 24 between each piece
+
+        for i, piece in enumerate(self.pale_pieces_taken):
+            x = 5 + (i%8)*20
+            y = 300 + math.floor(i/8)*20
+            piece.print(x,y)
+
+        for i, piece in enumerate(self.dark_pieces_taken):
+            x = 5 + (i%8)*20
+            y = 340 + math.floor(i/8)*20
+            piece.print(x,y)
     
 
 

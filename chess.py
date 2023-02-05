@@ -16,32 +16,53 @@ class Chess():
         self.promotion_flag = False
 
         self.my_side = my_side
-        self.my_score = 0
+        self.my_score = None
 
         self.opp_side = Constants.Color.DARK if my_side == Constants.Color.PALE else Constants.Color.PALE
-        self.opp_score = 0
-
-        # for showing taken pieces
-        self.pale_pieces_taken = []
-        self.dark_pieces_taken = []
+        self.opp_score = None
 
         # for highlighting the last moves tiles
         self.last_move = None
 
     # set the board up with a specific state
-    def init_board(self, state):
+    # state -> a board state to set
+    # my_side -> optionally specify my side
+    def init_board(self, state, my_side: Constants.Color = Constants.Color.NONE):
+        if my_side != Constants.Color.NONE:
+            self.my_side = my_side
+            self.opp_side = Constants.Color.DARK if self.my_side == Constants.Color.PALE else Constants.Color.PALE
+
         self.board.apply_board_state(state)
+
+        self.my_score = 0
+        self.opp_score = 0
+
+        #TODO remove this, test code
+        # self.move_list.append(Move.Move("PF3", Constants.Color.PALE))
+        # self.move_list.append(Move.Move("PH8=Q+", Constants.Color.PALE))
+        # move1 = Move.Move("PF3", Constants.Color.PALE)
+        # move2 = Move.Move("PF3", Constants.Color.DARK)
+        # i=15
+        # while i>0:
+        #     self.move_list.append(move1)
+        #     self.move_list.append(move2)
+        #     i = i - 1
 
     # show the board
     def print(self):
         # print the move list
         start_x = 264
         start_y = 5
+        
+        # factor for determining if the list will go off the page
+        factor = (math.floor((Config.WINDOW_SIZE_Y-5)/24))*2
+        Display.adapt_screen_size(math.ceil((len(self.move_list))/factor))
+
         for i, move in enumerate(self.move_list):
-            y = start_y + (i - i%2)*12
-            x_line_num =  start_x + math.floor(y/Config.WINDOW_SIZE_Y)*100
-            x_move_pale = start_x + math.floor(y/Config.WINDOW_SIZE_Y)*100 + 20
-            x_move_dark = start_x + math.floor(y/Config.WINDOW_SIZE_Y)*100 + 20 + (i%2)*50
+            y = start_y + ((i%factor) - (i)%2)*12
+            x_line_num =  start_x + math.floor(i/factor)*160
+            x_move_pale = start_x + math.floor(i/factor)*160 + 25
+            x_move_dark = start_x + math.floor(i/factor)*160 + 25 + 70
 
             if i%2 == 0:
                 line_num_str = str(int(i/2) + 1) + "."
@@ -53,6 +74,12 @@ class Chess():
         xoffset = 24
         yoffset = 24
         self.board.print(self.last_move, xoffset, yoffset)
+
+        # print the score differential
+        if self.my_score != None and self.opp_score != None:
+            score_str = ("-" if self.my_score < self.opp_score else "+") + str(abs(self.my_score-self.opp_score))
+            Display.render_to_screen(5,384,score_str,Config.COLOR_TEXT)
+
 
     # executes my move
     # move   -> my move to execute
@@ -70,9 +97,12 @@ class Chess():
 
             self.last_move = (from_tile, to_tile)
 
-            if from_tile != Tiles.NOWHERE and self.board.move_piece(from_tile,to_tile):
-                self.move_list.append(move)
-                return True
+            if from_tile != Tiles.NOWHERE:
+                score = self.board.move_piece(from_tile,to_tile)
+                if score > -1:
+                    self.move_list.append(move)
+                    self.my_score = self.my_score + score
+                    return True
 
             return False
 
@@ -91,12 +121,15 @@ class Chess():
             return self.board.castle_queen_side(self.opp_side)
         else:
             to_tile = move.destination
-            from_tile = self.board.get_piece_tile_for_move(move.get_piece(), self.opp_side, to_tile)
+            from_tile = self.board.get_piece_tile_for_move(move.get_piece(), self.opp_side, to_tile, move.file_or_rank if move.ambiguous else None)
 
             self.last_move = (from_tile, to_tile)
 
-            if from_tile != Tiles.NOWHERE and self.board.move_piece(from_tile,to_tile):
-                self.move_list.append(move)
+            if from_tile != Tiles.NOWHERE:
+                score = self.board.move_piece(from_tile,to_tile)
+                if score > -1:
+                    self.move_list.append(move)
+                    self.opp_score = self.opp_score + score
                 return True
 
         return False
@@ -115,6 +148,7 @@ class Chess():
                 
         return tile_opp_king in tiles_covered
 
+    # TODO
     # return -> True if opposing king is in checkmate, False otherwise
     def opp_king_in_checkmate(self) -> bool:
         tiles_covered = set()
@@ -130,7 +164,7 @@ class Chess():
         return tile_opp_king in tiles_covered
 
 
-
+    # TODO
     # return -> True if my king is in checkmate, False otherwise
     def my_king_in_checkmate(self) -> bool:
         tiles_covered = []

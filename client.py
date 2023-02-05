@@ -28,7 +28,8 @@ class Client():
     # runs the game
     def game_loop(self):
         #self.chess.init_board(Board_States.DEFAULT_STATE)
-        self.chess.init_board(Board_States.CASTLING_STATE)
+        #self.chess.init_board(Board_States.CASTLING_STATE)
+        self.chess.init_board(Board_States.PROMOTION_STATE)
 
         textinput = pygame_textinput.TextInputVisualizer(None, Display.font_input, True, Config.COLOR_TEXT, 300, 3, Config.COLOR_TEXT)
         my_move = ""
@@ -86,6 +87,10 @@ class Client():
                         if len(opp_move_str) > 0:
                             opp_move = Move.Move(opp_move_str, self.chess.opp_side)
                             self.chess.opp_move(opp_move)
+
+                            if opp_move.promotion:
+                                self.chess.promote(opp_move.destination, opp_move.promotion_piece)
+                                
                             my_turn = True
 
                 if opp_move == 'forfeit':

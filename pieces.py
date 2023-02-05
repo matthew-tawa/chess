@@ -3,6 +3,10 @@ import Display
 import Constants
 import math
 from Tiles import Tiles
+from Tiles import get_file_str
+from Tiles import get_rank_str
+from Tiles import get_file_int
+from Tiles import get_rank_int
 import Board
 
 # *****************************************************************************************************
@@ -22,11 +26,11 @@ class Piece:
 
     # return the pieces file
     def file(self) -> str:
-        return chr(65 + self.pos.value%8)
+        return get_file_str(self.pos)
 
     # return the pieces rank
     def rank(self) -> str:
-        return  8 - math.floor(self.pos.value/8)
+        return  get_rank_str(self.pos)
 
     # prints the piece
     def print(self, x, y):
@@ -125,10 +129,11 @@ class Bishop(Piece):
         #  \
         #   B
         for tile in tiles_rev:
-            same_diag_tl_bishop = abs(tile.value - self.pos.value) % 9 == 0 and tile.value < self.pos.value
+            desired_quadrant = get_file_int(tile) < get_file_int(self.pos) and get_rank_int(tile) > get_rank_int(self.pos)
+            same_diag_tl_bishop = abs(tile.value - self.pos.value) % 9 == 0
             tile_empty_or_enemy = board.board[tile].color != self.color
             
-            if same_diag_tl_bishop and tile != self.pos:
+            if same_diag_tl_bishop and desired_quadrant and tile != self.pos:
                 if tile_empty_or_enemy:
                     self.valid_moves.append(tile)
             
@@ -141,10 +146,11 @@ class Bishop(Piece):
         #  \
         #   \
         for tile in tiles_fwd:
-            same_diag_bishop_br = abs(tile.value - self.pos.value) % 9 == 0 and tile.value > self.pos.value
+            desired_quadrant = get_file_int(tile) > get_file_int(self.pos) and get_rank_int(tile) < get_rank_int(self.pos)
+            same_diag_bishop_br = abs(tile.value - self.pos.value) % 9 == 0
             tile_empty_or_enemy = board.board[tile].color != self.color
             
-            if same_diag_bishop_br and tile != self.pos:
+            if same_diag_bishop_br and desired_quadrant and tile != self.pos:
                 if tile_empty_or_enemy:
                     self.valid_moves.append(tile)
 
@@ -157,10 +163,11 @@ class Bishop(Piece):
         #  /
         # /  
         for tile in tiles_fwd:
-            same_diag_bl_bishop = abs(tile.value - self.pos.value) % 7 == 0 and tile.value > self.pos.value
+            desired_quadrant = get_file_int(tile) < get_file_int(self.pos) and get_rank_int(tile) < get_rank_int(self.pos)
+            same_diag_bl_bishop = abs(tile.value - self.pos.value) % 7 == 0
             tile_empty_or_enemy = board.board[tile].color != self.color
             
-            if same_diag_bl_bishop and tile != self.pos:
+            if same_diag_bl_bishop and desired_quadrant and tile != self.pos:
                 if tile_empty_or_enemy:
                     self.valid_moves.append(tile)
 
@@ -173,10 +180,11 @@ class Bishop(Piece):
         #  /
         # B 
         for tile in tiles_rev:
-            same_diag_bishop_tr = abs(tile.value - self.pos.value) % 7 == 0 and tile.value < self.pos.value
+            desired_quadrant = get_file_int(tile) > get_file_int(self.pos) and get_rank_int(tile) > get_rank_int(self.pos)
+            same_diag_bishop_tr = abs(tile.value - self.pos.value) % 7 == 0
             tile_empty_or_enemy = board.board[tile].color != self.color
             
-            if same_diag_bishop_tr and tile != self.pos:
+            if same_diag_bishop_tr and desired_quadrant and tile != self.pos:
                 if tile_empty_or_enemy:
                     self.valid_moves.append(tile)
 
@@ -206,7 +214,7 @@ class Rook(Piece):
         #  |
         #  R
         for tile in tiles_rev:
-            same_file_top_rook = tile.value % 8 == self.pos.value % 8 and tile.value < self.pos.value
+            same_file_top_rook = get_file_int(tile) == get_file_int(self.pos) and tile.value < self.pos.value
             tile_empty_or_enemy = board.board[tile].color != self.color
             
             if same_file_top_rook and tile != self.pos:
@@ -222,7 +230,7 @@ class Rook(Piece):
         #  |
         #  |
         for tile in tiles_fwd:
-            same_file_rook_bot = tile.value % 8 == self.pos.value % 8 and tile.value > self.pos.value
+            same_file_rook_bot = get_file_int(tile) == get_file_int(self.pos) and tile.value > self.pos.value
             tile_empty_or_enemy = board.board[tile].color != self.color
             
             if same_file_rook_bot and tile != self.pos:
@@ -237,8 +245,8 @@ class Rook(Piece):
         #   
         # - - R
         #   
-        for tile in tiles_fwd:
-            same_rank_left_rook = math.floor(tile.value / 8) == math.floor(self.pos.value / 8) and tile.value < self.pos.value
+        for tile in tiles_rev:
+            same_rank_left_rook = get_rank_int(tile) == get_rank_int(self.pos) and tile.value < self.pos.value
             tile_empty_or_enemy = board.board[tile].color != self.color
             
             if same_rank_left_rook and tile != self.pos:
@@ -253,8 +261,8 @@ class Rook(Piece):
         #   
         # R - -
         # 
-        for tile in tiles_rev:
-            same_rank_rook_right = math.floor(tile.value / 8) == math.floor(self.pos.value / 8) and tile.value > self.pos.value
+        for tile in tiles_fwd:
+            same_rank_rook_right = get_rank_int(tile) == get_rank_int(self.pos) and tile.value > self.pos.value
             tile_empty_or_enemy = board.board[tile].color != self.color
             
             if same_rank_rook_right and tile != self.pos:
@@ -286,10 +294,11 @@ class Queen(Piece):
         #  \
         #   Q
         for tile in tiles_rev:
-            same_diag_tl_queen = abs(tile.value - self.pos.value) % 9 == 0 and tile.value < self.pos.value
+            desired_quadrant = get_file_int(tile) < get_file_int(self.pos) and get_rank_int(tile) > get_rank_int(self.pos)
+            same_diag_tl_queen = abs(tile.value - self.pos.value) % 9 == 0
             tile_empty_or_enemy = board.board[tile].color != self.color
             
-            if same_diag_tl_queen and tile != self.pos:
+            if same_diag_tl_queen and desired_quadrant and tile != self.pos:
                 if tile_empty_or_enemy:
                     self.valid_moves.append(tile)
             
@@ -302,10 +311,11 @@ class Queen(Piece):
         #  \
         #   \
         for tile in tiles_fwd:
-            same_diag_queen_br = abs(tile.value - self.pos.value) % 9 == 0 and tile.value > self.pos.value
+            desired_quadrant = get_file_int(tile) > get_file_int(self.pos) and get_rank_int(tile) < get_rank_int(self.pos)
+            same_diag_queen_br = abs(tile.value - self.pos.value) % 9 == 0
             tile_empty_or_enemy = board.board[tile].color != self.color
             
-            if same_diag_queen_br and tile != self.pos:
+            if same_diag_queen_br and desired_quadrant and tile != self.pos:
                 if tile_empty_or_enemy:
                     self.valid_moves.append(tile)
 
@@ -318,10 +328,11 @@ class Queen(Piece):
         #  /
         # /  
         for tile in tiles_fwd:
-            same_diag_bl_queen = abs(tile.value - self.pos.value) % 7 == 0 and tile.value > self.pos.value
+            desired_quadrant = get_file_int(tile) < get_file_int(self.pos) and get_rank_int(tile) < get_rank_int(self.pos)
+            same_diag_bl_queen = abs(tile.value - self.pos.value) % 7 == 0
             tile_empty_or_enemy = board.board[tile].color != self.color
             
-            if same_diag_bl_queen and tile != self.pos:
+            if same_diag_bl_queen and desired_quadrant and tile != self.pos:
                 if tile_empty_or_enemy:
                     self.valid_moves.append(tile)
 
@@ -334,10 +345,11 @@ class Queen(Piece):
         #  /
         # Q
         for tile in tiles_rev:
-            same_diag_queen_tr = abs(tile.value - self.pos.value) % 7 == 0 and tile.value < self.pos.value
+            desired_quadrant = get_file_int(tile) > get_file_int(self.pos) and get_rank_int(tile) > get_rank_int(self.pos)
+            same_diag_queen_tr = abs(tile.value - self.pos.value) % 7 == 0
             tile_empty_or_enemy = board.board[tile].color != self.color
             
-            if same_diag_queen_tr and tile != self.pos:
+            if same_diag_queen_tr and desired_quadrant and tile != self.pos:
                 if tile_empty_or_enemy:
                     self.valid_moves.append(tile)
 
@@ -381,7 +393,7 @@ class Queen(Piece):
         #   
         # - - Q
         #   
-        for tile in tiles_fwd:
+        for tile in tiles_rev:
             same_rank_left_queen = math.floor(tile.value / 8) == math.floor(self.pos.value / 8) and tile.value < self.pos.value
             tile_empty_or_enemy = board.board[tile].color != self.color
             
@@ -397,7 +409,7 @@ class Queen(Piece):
         #   
         # Q - -
         # 
-        for tile in tiles_rev:
+        for tile in tiles_fwd:
             same_rank_queen_right = math.floor(tile.value / 8) == math.floor(self.pos.value / 8) and tile.value > self.pos.value
             tile_empty_or_enemy = board.board[tile].color != self.color
             

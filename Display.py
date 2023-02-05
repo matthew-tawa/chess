@@ -17,7 +17,23 @@ screen = pygame.display.set_mode((Config.WINDOW_SIZE_X, Config.WINDOW_SIZE_Y))
 pygame.display.set_caption("chess")
 
 
+# update screen size
+def set_screen_size(x, y):
+    global screen
+    screen = pygame.display.set_mode((x, y))
 
+# USED FOR CHESS CLASS
+# adapts screen size to latest move_list length
+# returns True if screen size was changed, False otherwise
+current_move_list_columns = 1
+def adapt_screen_size(move_list_num_cols) -> bool:
+    global current_move_list_columns
+    if move_list_num_cols != current_move_list_columns and move_list_num_cols > 0:
+        set_screen_size(Config.WINDOW_SIZE_X + 150*move_list_num_cols, Config.WINDOW_SIZE_Y)
+        current_move_list_columns = move_list_num_cols
+        return True
+    
+    return False
 
 # if you want to update the display, call this function, perform your code, then call update_display_post()
 def update_display_pre():

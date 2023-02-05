@@ -69,9 +69,31 @@ class Tiles(Enum):
     H1 = 63
     NOWHERE = -100
 
-
+# converts string to tile
+# s -> string to convert to tile. Must be in format: [A-Ha-h][1-8]
 def str_to_tile(s: str) -> Tiles:
-    return Tiles((8-int(s[1]))*8 + ord(s[0])-65)
+    return Tiles((8-int(s[1]))*8 + ord(s[0].upper())-65)
 
+# converts tile to str
 def tile_to_str(t: Tiles) -> str:
-    return chr(t.value%8 + 65) + str(8 - floor(t.value/8))
+    return get_file_str(t) + get_rank_str(t)
+
+# get the file of a tile as an integer
+# return -> 1 for A, 2 for B, ... 8 for H
+def get_file_int(t: Tiles) -> int:
+    return t.value % 8
+
+# get the rank of a tile as an integer
+# return -> integer between 1 and 8 inclusively
+def get_rank_int(t: Tiles) -> int:
+    return 8 - floor(t.value/8)
+
+# get the file of a tile as a string
+# return -> A, B, ... H
+def get_file_str(t: Tiles) -> str:
+    return chr(t.value % 8 + 65)
+
+# get the rank of a tile as a string
+# return -> 1, 2, ... 8
+def get_rank_str(t: Tiles) -> str:
+    return str(get_rank_int(t))

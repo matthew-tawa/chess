@@ -35,3 +35,22 @@ CASTLING_STATE = {\
                                Tiles.G2: "pawn:pale",     Tiles.G7: "pawn:dark",\
     Tiles.H1: "rook:pale",     Tiles.H2: "pawn:pale",     Tiles.H7: "pawn:dark",     Tiles.H8: "rook:dark"\
     }
+
+# setup allowing promotions
+PROMOTION_STATE = {\
+    Tiles.A1: "rook:pale",     Tiles.A2: "pawn:pale",     Tiles.A7: "pawn:dark",     Tiles.A8: "rook:dark",\
+                               Tiles.B2: "pawn:pale",     Tiles.B7: "pawn:dark",\
+                               Tiles.C2: "pawn:pale",     Tiles.C7: "pawn:dark",\
+                               Tiles.D2: "pawn:pale",     Tiles.D7: "pawn:dark",\
+    Tiles.E1: "king:pale",     Tiles.E2: "pawn:pale",     Tiles.E7: "pawn:dark",     Tiles.E8: "king:dark",\
+                               Tiles.F2: "pawn:pale",     Tiles.F7: "pawn:dark",\
+                               Tiles.G2: "pawn:dark",     Tiles.G7: "pawn:pale",\
+    Tiles.H1: "rook:pale",     Tiles.H2: "pawn:pale",     Tiles.H7: "pawn:dark",     Tiles.H8: "rook:dark"\
+    }
+
+# board state with ambiguous moves
+AMBIGUOUS_STATE = {\
+    Tiles.D8: "rook:dark", Tiles.H8: "rook:dark",\
+        Tiles.A5: "rook:pale", Tiles.A1: "rook:pale",\
+        Tiles.E4: "queen:pale", Tiles.H4: "queen:pale", Tiles.H1: "queen:pale"\
+    }

@@ -12,6 +12,7 @@ import pygame_textinput
 import Config
 import server
 import client
+import Connection
 import Chess
 import Constants
 import Display
@@ -50,19 +51,24 @@ def main():
 def handle_menu_keypress(key):
     match key:
         case pygame.K_1:
-            #ip, port = get_hosting_information()
             ip = Constants.SERVER_ADDRESS
             port = Constants.SERVER_PORT
+            #ip, port = get_hosting_information()
+            server_side_ui = get_user_input("Choose (P)ale or (D)ark...", ["P", "p", "D", "d"]).upper()
+            server_side = Constants.Color.PALE if server_side_ui == "P" else Constants.Color.DARK
+
             if ip != None and port != None:
-                s = server.Server(ip ,port)
-                s.start_server()
+                #s = server.Server(ip ,port)
+                s = Connection.Server(ip, port)
+                s.start_server(server_side)
                 s.game_loop()
         case pygame.K_2:
             #ip, port = get_hosting_information()
             ip = Constants.SERVER_ADDRESS
             port = Constants.SERVER_PORT
             if ip != None and port != None:
-                c = client.Client(ip, port)
+                #c = client.Client(ip, port)
+                c = Connection.Client(ip, port)
                 c.join_server()
                 c.game_loop()
         case _:
@@ -73,15 +79,18 @@ def handle_menu_keypress(key):
 # returns the ip address and port number
 # return -> (ip, port) as tuple
 def get_hosting_information() -> tuple[str, str]:
-    ip = get_user_input(5, 5, "Enter IPv4 address...")
+    ip = get_user_input("Enter IPv4 address...")
     if ip != None:
-        port = get_user_input(5, 5, "Enter Port number (>1024)...")
+        port = get_user_input("Enter Port number (>1024)...")
 
     return (None, None) if (ip == None) or (port == None) else (ip, int(port))
 
 # function used to get one string from user
 # prompt -> prompt to disply to user
-def get_user_input(prompt_x, prompt_y, prompt: str) -> str:
+# data_validation -> limit user to enetering certain values
+# prompt_x -> x position of prompt (default 5)
+# prompt_y -> y position of prompt (default 5)
+def get_user_input(prompt: str, data_validation = [], prompt_x = 5, prompt_y = 5) -> str:
     textinput = pygame_textinput.TextInputVisualizer(None, Display.font_input, True, Config.COLOR_TEXT, 300, 3, Config.COLOR_TEXT)
 
     result = ""
@@ -104,7 +113,7 @@ def get_user_input(prompt_x, prompt_y, prompt: str) -> str:
                 case pygame.KEYDOWN:
                     if event.key == pygame.K_RETURN:
                         result = textinput.value
-                        user_typing = False
+                        user_typing = data_validation and not result in data_validation 
 
                     if event.key == pygame.K_ESCAPE:
                         result = None

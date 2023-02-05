@@ -26,8 +26,8 @@ KNIGHT_SCORE    = 3
 BISHOP_SCORE    = 3
 ROOK_SCORE      = 5
 QUEEN_SCORE     = 9
-KING_SCORE      = 0
-EMPTY_SCORE     = -1
+KING_SCORE      = 100
+EMPTY_SCORE     = 0
 
 # board dimensions
 BOARD_X = 8
@@ -42,6 +42,7 @@ COLOR_WHITE     = (255, 255, 255)
 COLOR_BLACK     = (0  , 0  , 0)
 COLOR_GREEN     = (22 , 111, 0)
 COLOR_YELLOW    = (255, 204, 0)
+COLOR_GRAY      = (30 , 30 , 30)
 COLOR_PALE_BLUE = (204, 243, 246)
 COLOR_DARK_BROWN= (210, 140, 69)
 COLOR_PALE_BROWN= (255, 207, 159)

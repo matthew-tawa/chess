@@ -37,7 +37,8 @@ class Server():
     # runs the game
     def game_loop(self):
         #self.chess.init_board(Board_States.DEFAULT_STATE)
-        self.chess.init_board(Board_States.CASTLING_STATE)
+        #self.chess.init_board(Board_States.CASTLING_STATE)
+        self.chess.init_board(Board_States.PROMOTION_STATE)
 
         textinput = pygame_textinput.TextInputVisualizer(None, Display.font_input, True, Config.COLOR_TEXT, 300, 3, Config.COLOR_TEXT)
         my_move = ""
@@ -71,9 +72,6 @@ class Server():
 
                             textinput.value = ""
                             if self.chess.my_move(my_move):
-                                my_move.check = self.chess.opp_king_in_check()
-                                #TODO my_move.checkmate = 
-
                                 if my_move.promotion:
                                     # update the display
                                     Display.update_display_pre()
@@ -97,6 +95,9 @@ class Server():
                                     
                                     self.chess.promote(my_move.destination, promotion_piece)
                                     my_move.promotion_piece = promotion_piece
+
+                                my_move.check = self.chess.opp_king_in_check()
+                                #TODO my_move.checkmate = 
 
                                 self.conn.sendall(str(my_move).encode())
                                 my_turn = False
