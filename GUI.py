@@ -10,8 +10,6 @@ import pygame.freetype
 import pygame_textinput
 
 import Config
-import server
-import client
 import Connection
 import Chess
 import Constants

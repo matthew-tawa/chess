@@ -1,6 +1,8 @@
 import pygame
 import pygame.freetype
 import Config
+import random
+import Constants
 
 
 
@@ -15,6 +17,38 @@ font_input = pygame.font.Font('font\Roboto-Regular.ttf', 14)
 # create the screen
 screen = pygame.display.set_mode((Config.WINDOW_SIZE_X, Config.WINDOW_SIZE_Y))
 pygame.display.set_caption("chess")
+
+# load a random chess piece as the icon
+rand_int = random.randint(1,12)
+icon_str = None
+
+if rand_int == 1:
+    icon_str = Constants.IMAGE_BISHOP_DARK
+elif rand_int == 2:
+    icon_str = Constants.IMAGE_BISHOP_PALE
+elif rand_int == 3:
+    icon_str = Constants.IMAGE_KING_DARK
+elif rand_int == 4:
+    icon_str = Constants.IMAGE_KING_PALE
+elif rand_int == 5:
+    icon_str = Constants.IMAGE_KNIGHT_DARK
+elif rand_int == 6:
+    icon_str = Constants.IMAGE_KNIGHT_PALE
+elif rand_int == 7:
+    icon_str = Constants.IMAGE_PAWN_DARK
+elif rand_int == 8:
+    icon_str = Constants.IMAGE_PAWN_PALE
+elif rand_int == 9:
+    icon_str = Constants.IMAGE_QUEEN_DARK
+elif rand_int == 10:
+    icon_str = Constants.IMAGE_QUEEN_PALE
+elif rand_int == 11:
+    icon_str = Constants.IMAGE_ROOK_DARK
+elif rand_int == 12:
+    icon_str = Constants.IMAGE_ROOK_PALE
+
+icon = pygame.image.load(icon_str)
+pygame.display.set_icon(icon)
 
 
 # update screen size
