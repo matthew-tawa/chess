@@ -11,22 +11,21 @@ import Constants
 # *****
 
 # strokes for pieces
-KEY_CYCLE_PAWNS     = pg.K_p
-KEY_CYCLE_KNIGHT    = pg.K_n
-KEY_CYCLE_BISHOP    = pg.K_b
-KEY_CYCLE_ROOK      = pg.K_r
-KEY_CYCLE_QUEEN     = pg.K_q
-KEY_CYCLE_KING      = pg.K_k
-KEY_SELECT          = pg.K_KP_ENTER
-KEY_BACK            = pg.K_ESCAPE
+KEY_PAWNS   = pg.K_p
+KEY_KNIGHT  = pg.K_n
+KEY_BISHOP  = pg.K_b
+KEY_ROOK    = pg.K_r
+KEY_QUEEN   = pg.K_q
+KEY_KING    = pg.K_k
+KEY_BACK    = pg.K_ESCAPE
 
 # commands
-KEY_FLIP_BOARD      = pg.K_f
+KEY_FLIP_BOARD = pg.K_SPACE
 
-# window size (in pixels)
-# DO NOT CHANGE THIS
-WINDOW_SIZE_X = 430
-WINDOW_SIZE_Y = 410
+# graphics
+WINDOW_SIZE_X = 430 # DO NOT CHANGE THIS
+WINDOW_SIZE_Y = 410 # DO NOT CHANGE THIS
+FPS = 10
 
 # game element colors
 COLOR_WINDOW_BACKGROUND = Constants.COLOR_GRAY

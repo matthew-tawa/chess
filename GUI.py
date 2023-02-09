@@ -20,39 +20,44 @@ import Display
 def main():
     # set event types allowed in queue
     pygame.event.set_blocked(None) # block all events
-    pygame.event.set_allowed([pygame.QUIT, pygame.KEYDOWN, pygame.KEYUP])
+    pygame.event.set_allowed([pygame.QUIT, pygame.KEYUP, pygame.KEYDOWN])
 
     # creating an empty board just for displaying purposes, wont be the real playing board
     c = Chess.Chess(Constants.Color.NONE)
 
+    Display.update_display_pre()
+
+    c.print()
+
+    Display.render_to_screen(5, 250, "1- Host a game", Config.COLOR_TEXT)
+    Display.render_to_screen(5, 275, "2- Join a game", Config.COLOR_TEXT)
+    Display.update_display_post()
+
     running = True
     while running:
-        Display.update_display_pre()
+        # wait for an event
+        event = pygame.event.wait()
 
-        c.print()
+        if event.type == pygame.QUIT:
+            running = False
+        
+        # call event handler
+        if event.type == pygame.KEYDOWN:
+            handle_menu_keypress(event.key)
 
-        Display.render_to_screen(5, 250, "1- Host a game", Config.COLOR_TEXT)
-        Display.render_to_screen(5, 275, "2- Join a game", Config.COLOR_TEXT)
 
-        # call event handlers
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            
-            if event.type == pygame.KEYUP:
-                handle_menu_keypress(event.key)
-
-        Display.update_display_post()
+        
 
 
 # handles when a key is pressed in a menu
 def handle_menu_keypress(key):
     match key:
         case pygame.K_1:
-            ip = Constants.SERVER_ADDRESS
-            port = Constants.SERVER_PORT
-            #ip, port = get_hosting_information()
-            server_side_ui = get_user_input("Choose (P)ale or (D)ark...", ["P", "p", "D", "d"]).upper()
+            #ip = Constants.SERVER_ADDRESS
+            #port = Constants.SERVER_PORT
+
+            ip, port = get_hosting_information()
+            server_side_ui = get_user_input("Choose (P)ale or (D)ark...", "", ["P", "p", "D", "d"]).upper()
             server_side = Constants.Color.PALE if server_side_ui == "P" else Constants.Color.DARK
 
             if ip != None and port != None:
@@ -61,9 +66,10 @@ def handle_menu_keypress(key):
                 s.start_server(server_side)
                 s.game_loop()
         case pygame.K_2:
-            #ip, port = get_hosting_information()
-            ip = Constants.SERVER_ADDRESS
-            port = Constants.SERVER_PORT
+            #ip = Constants.SERVER_ADDRESS
+            #port = Constants.SERVER_PORT
+
+            ip, port = get_hosting_information()
             if ip != None and port != None:
                 #c = client.Client(ip, port)
                 c = Connection.Client(ip, port)
@@ -77,7 +83,7 @@ def handle_menu_keypress(key):
 # returns the ip address and port number
 # return -> (ip, port) as tuple
 def get_hosting_information() -> tuple[str, str]:
-    ip = get_user_input("Enter IPv4 address...")
+    ip = get_user_input("Enter IPv4 address...", "192.168.1.")
     if ip != None:
         port = get_user_input("Enter Port number (>1024)...")
 
@@ -88,8 +94,11 @@ def get_hosting_information() -> tuple[str, str]:
 # data_validation -> limit user to enetering certain values
 # prompt_x -> x position of prompt (default 5)
 # prompt_y -> y position of prompt (default 5)
-def get_user_input(prompt: str, data_validation = [], prompt_x = 5, prompt_y = 5) -> str:
-    textinput = pygame_textinput.TextInputVisualizer(None, Display.font_input, True, Config.COLOR_TEXT, 300, 3, Config.COLOR_TEXT)
+def get_user_input(prompt: str, default_txt = "", data_validation = [], prompt_x = 5, prompt_y = 5) -> str:
+    textmanager = pygame_textinput.TextInputManager()
+    textinput = pygame_textinput.TextInputVisualizer(textmanager, Display.font_input, True, Config.COLOR_TEXT, 300, 3, Config.COLOR_TEXT)
+    textinput.value = default_txt
+    textmanager.cursor_pos = len(textmanager.value)
 
     result = ""
     user_typing = True
@@ -118,6 +127,8 @@ def get_user_input(prompt: str, data_validation = [], prompt_x = 5, prompt_y = 5
                         user_typing = False
 
         Display.update_display_post()
+        
+        Display.clock.tick(Config.FPS)
     
     return result
 

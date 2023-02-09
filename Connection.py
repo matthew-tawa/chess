@@ -53,7 +53,7 @@ class Connection():
                         exit()
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_RETURN:
-                        if my_turn and len(textinput.value) >1:
+                        if my_turn and len(textinput.value) >2:
                             my_move = Move.Move(textinput.value.upper(), self.chess.my_side)
 
                             if not my_move.castle_k and not my_move.castle_q:
@@ -73,13 +73,13 @@ class Connection():
                                     while promotion_piece == None:
                                         promotion_event = pygame.event.wait()
                                         
-                                        if promotion_event.key == pygame.K_n:
+                                        if promotion_event.key == Config.KEY_KNIGHT:
                                             promotion_piece = "N"
-                                        elif promotion_event.key == pygame.K_b:
+                                        elif promotion_event.key == Config.KEY_BISHOP:
                                             promotion_piece = "B"
-                                        elif promotion_event.key == pygame.K_r:
+                                        elif promotion_event.key == Config.KEY_ROOK:
                                             promotion_piece = "R"
-                                        elif promotion_event.key == pygame.K_q:
+                                        elif promotion_event.key == Config.KEY_QUEEN:
                                             promotion_piece = "Q"
                                     
                                     self.chess.promote(my_move.destination, promotion_piece)
@@ -113,6 +113,7 @@ class Connection():
                             my_turn = True
 
                 if opp_move == 'forfeit':
+                    # TODO
                     break
 
             except Exception as e:
@@ -121,6 +122,8 @@ class Connection():
                 else:
                     print(e)
                     break
+
+            Display.clock.tick(Config.FPS)
 
         print('Connection closed.')
         self.sock.close()

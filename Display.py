@@ -4,6 +4,8 @@ import Config
 import random
 import Constants
 
+# main game clock
+clock = pygame.time.Clock()
 
 
 # fonts
