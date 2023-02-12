@@ -1,4 +1,5 @@
 from enum import Enum
+import os.path
 
 # piece colors
 class Color(Enum):
@@ -7,18 +8,18 @@ class Color(Enum):
     DARK = 1
 
 # piece images
-IMAGE_PAWN_PALE   = 'images\Chess_plt60.png'
-IMAGE_PAWN_DARK   = 'images\Chess_pdt60.png'
-IMAGE_KNIGHT_PALE = 'images\Chess_nlt60.png'
-IMAGE_KNIGHT_DARK = 'images\Chess_ndt60.png'
-IMAGE_BISHOP_PALE = 'images\Chess_blt60.png'
-IMAGE_BISHOP_DARK = 'images\Chess_bdt60.png'
-IMAGE_ROOK_PALE   = 'images\Chess_rlt60.png'
-IMAGE_ROOK_DARK   = 'images\Chess_rdt60.png'
-IMAGE_QUEEN_PALE  = 'images\Chess_qlt60.png'
-IMAGE_QUEEN_DARK  = 'images\Chess_qdt60.png'
-IMAGE_KING_PALE   = 'images\Chess_klt60.png'
-IMAGE_KING_DARK   = 'images\Chess_kdt60.png'
+IMAGE_PAWN_PALE   = os.path.join("images", "Chess_plt60.png")
+IMAGE_PAWN_DARK   = os.path.join("images", "Chess_pdt60.png")
+IMAGE_KNIGHT_PALE = os.path.join("images", "Chess_nlt60.png")
+IMAGE_KNIGHT_DARK = os.path.join("images", "Chess_ndt60.png")
+IMAGE_BISHOP_PALE = os.path.join("images", "Chess_blt60.png")
+IMAGE_BISHOP_DARK = os.path.join("images", "Chess_bdt60.png")
+IMAGE_ROOK_PALE   = os.path.join("images", "Chess_rlt60.png")
+IMAGE_ROOK_DARK   = os.path.join("images", "Chess_rdt60.png")
+IMAGE_QUEEN_PALE  = os.path.join("images", "Chess_qlt60.png")
+IMAGE_QUEEN_DARK  = os.path.join("images", "Chess_qdt60.png")
+IMAGE_KING_PALE   = os.path.join("images", "Chess_klt60.png")
+IMAGE_KING_DARK   = os.path.join("images", "Chess_kdt60.png")
 
 # piece scores
 PAWN_SCORE      = 1
@@ -35,7 +36,7 @@ BOARD_Y = 8
 
 # server configs
 SERVER_ADDRESS  = '192.168.1.15'
-SERVER_PORT     = 6969
+SERVER_PORT     = 4444
 
 # colors           R    G    B
 COLOR_WHITE     = (255, 255, 255)

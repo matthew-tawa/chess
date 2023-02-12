@@ -136,8 +136,8 @@ class Connection():
 
 
 class Server(Connection):
-    def __init__(self, ip, port) -> None:
-        Connection.__init__(self, ip, port)
+    def __init__(self, port) -> None:
+        Connection.__init__(self, "0.0.0.0", port)
 
         # client info (to be populated on connection)
         self.conn = None
@@ -148,9 +148,9 @@ class Server(Connection):
     def start_server(self, my_side: Constants.Color):
         self.side = my_side
 
-        print('Starting server on %s, port %s as the %s pieces.' % (self.ip, self.port, self.side))
+        print('Starting server on port %s as the %s pieces.' % (self.port, self.side))
         self.sock.bind((self.ip, self.port))
-        self.sock.listen(1)
+        self.sock.listen(10)
 
         # find connections
         self.conn, self.addr = self.sock.accept()
@@ -170,7 +170,7 @@ class Server(Connection):
     
     # return -> True if ready to receive something, False otherwise
     def ready(self) -> bool:
-        return select.select([self.conn], [], [], 0.1)
+        return select.select([self.conn], [], [], 0.1)[0]
 
 
 
@@ -202,6 +202,6 @@ class Client(Connection):
     
     # return -> True if ready to receive something, False otherwise
     def ready(self) -> bool:
-        return select.select([self.sock], [], [], 0.1)
+        return select.select([self.sock], [], [], 0.1)[0]
 
    
